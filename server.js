@@ -103,18 +103,44 @@ function generateCode() {
   return Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
-function assignTargets(playerIds) {
-  let targets = [...playerIds];
-  for (let i = targets.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [targets[i], targets[j]] = [targets[j], targets[i]];
-  }
-  for (let i = 0; i < playerIds.length; i++) {
-    if (playerIds[i] === targets[i]) {
-      let swapIdx = (i + 1) % playerIds.length;
-      [targets[i], targets[swapIdx]] = [targets[swapIdx], targets[i]];
+// Fonction de tirage au sort INTELLIGENTE (avec mémoire)
+function assignTargets(playerIds, playersData) {
+  let attempts = 0;
+  let valid = false;
+  let targets = [];
+
+  // On essaie de trouver une combinaison parfaite (pas soi-même + pas une ancienne cible)
+  while (!valid && attempts < 100) {
+    attempts++;
+    targets = [...playerIds].sort(() => Math.random() - 0.5);
+    valid = true;
+    for (let i = 0; i < playerIds.length; i++) {
+      let pId = playerIds[i];
+      let tId = targets[i];
+      
+      // Invalide si on se tire soi-même ou si on a DÉJÀ eu cette cible dans un round précédent
+      if (pId === tId || (playersData[pId].pastTargets && playersData[pId].pastTargets.includes(tId))) {
+        valid = false;
+        break;
+      }
     }
   }
+
+  // Si on est bloqués (trop de rounds joués), on fait un tirage simple (juste pas soi-même)
+  if (!valid) {
+    targets = [...playerIds];
+    for (let i = targets.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [targets[i], targets[j]] = [targets[j], targets[i]];
+    }
+    for (let i = 0; i < playerIds.length; i++) {
+      if (playerIds[i] === targets[i]) {
+        let swapIdx = (i + 1) % playerIds.length;
+        [targets[i], targets[swapIdx]] = [targets[swapIdx], targets[i]];
+      }
+    }
+  }
+  
   return targets;
 }
 
@@ -126,7 +152,9 @@ io.on('connection', (socket) => {
       currentHostSocketId: socket.id,
       players: {},
       status: 'lobby',
-      round: 1
+      round: 1,
+      // On crée une copie des questions propre à cette partie pour pouvoir en supprimer au fur et à mesure
+      gameQuestions: JSON.parse(JSON.stringify(questions)) 
     };
     socket.join(code);
     socket.emit('gameCreated', code);
@@ -145,7 +173,12 @@ io.on('connection', (socket) => {
       } else {
           if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
           games[code].players[socket.id] = { 
-              id: socket.id, currentSocketId: socket.id, name, score: 0, status: 'waiting' 
+              id: socket.id, 
+              currentSocketId: socket.id, 
+              name, 
+              score: 0, 
+              status: 'waiting',
+              pastTargets: [] // Initialisation de la mémoire des cibles
           };
           if (games[code].host === socket.id) {
               games[code].currentHostSocketId = socket.id;
@@ -186,10 +219,15 @@ io.on('connection', (socket) => {
     if (game && game.currentHostSocketId === socket.id) {
       game.status = 'playing';
       const playerIds = Object.keys(game.players);
-      const targets = assignTargets(playerIds);
+      
+      // Nouveau système de tirage
+      const targets = assignTargets(playerIds, game.players);
       
       playerIds.forEach((id, index) => {
         game.players[id].targetId = targets[index];
+        // On mémorise la cible pour les prochains rounds
+        game.players[id].pastTargets.push(targets[index]); 
+        
         game.players[id].status = 'choosing_category';
         delete game.players[id].question;
         delete game.players[id].answer;
@@ -205,15 +243,22 @@ io.on('connection', (socket) => {
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
-        // Lien entre les couleurs et tes nouvelles catégories
         let catKey = "";
         if (category === 'verte') catKey = "categorie_verte_faciles_et_valentin";
         if (category === 'jaune') catKey = "categorie_jaune_intermediaires";
         if (category === 'rouge') catKey = "categorie_rouge_intimes_et_profondes";
 
-        const qList = questions[catKey];
-        const randomQ = qList[Math.floor(Math.random() * qList.length)];
-        game.players[playerId].category = category; // Gardé pour les points (+1, +2, +3)
+        const qList = game.gameQuestions[catKey];
+        let randomQ = "Tu as épuisé toutes les questions de cette catégorie ! Pose une question de ton choix."; // Au cas où
+        
+        if (qList.length > 0) {
+            const randomIndex = Math.floor(Math.random() * qList.length);
+            randomQ = qList[randomIndex];
+            // On supprime la question du paquet pour qu'elle ne retombe jamais
+            qList.splice(randomIndex, 1);
+        }
+
+        game.players[playerId].category = category; 
         game.players[playerId].question = randomQ;
         game.players[playerId].status = 'answering';
         socket.emit('questionAssigned', randomQ);
@@ -278,18 +323,15 @@ io.on('connection', (socket) => {
       }
   });
 
-  // GESTION DU BOUTON QUITTER
   socket.on('leaveGame', ({ code }) => {
     const game = games[code];
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
         if (game.host === playerId) {
-            // Si le Leader quitte, on supprime la partie pour libérer tout le monde
             delete games[code];
             io.to(code).emit('error', 'Le Leader a fermé la partie.');
         } else {
-            // Un joueur normal quitte
             delete game.players[playerId];
             io.to(code).emit('updatePlayers', Object.values(game.players));
         }
