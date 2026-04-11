@@ -6,8 +6,9 @@
   <title>Match & Reveal</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1a1a1a; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-    .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
+    .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); position: relative; }
     .header-title { font-size: 1.5em; font-weight: bold; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
+    .btn-leave { position: absolute; right: 15px; top: 12px; background: none; border: none; font-size: 24px; cursor: pointer; display: none; }
     .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
     .screen { display: none; width: 100%; max-width: 380px; margin-top: 2vh; }
     .active { display: block; }
@@ -35,7 +36,10 @@
   </style>
 </head>
 <body>
-  <div class="header"><p class="header-title">MATCH & REVEAL</p></div>
+  <div class="header">
+    <p class="header-title">MATCH & REVEAL</p>
+    <button id="btn-leave" class="btn-leave" onclick="leaveGame()" title="Quitter la partie">🚪</button>
+  </div>
   <div class="app-container">
     <div id="screen-home" class="screen active">
       <div class="card">
@@ -91,12 +95,11 @@
         if (myCode && myName) socket.emit('joinGame', { code: myCode, name: myName });
     });
 
+    // Amélioration de la gestion des erreurs pour vider la mémoire
     socket.on('error', (msg) => {
         alert(msg);
-        // Si la partie a disparu (ex: redémarrage serveur), on vide la mémoire pour débloquer le joueur
-        if (msg.includes('introuvable')) {
+        if (msg.includes('introuvable') || msg.includes('fermé') || msg.includes('déjà commencée')) {
             localStorage.removeItem('gameCode');
-            localStorage.removeItem('playerName');
             window.location.reload();
         }
     });
@@ -143,8 +146,18 @@
           document.getElementById('btn-next-round').style.display = 'block';
       }
       document.getElementById('display-code').innerText = myCode;
+      document.getElementById('btn-leave').style.display = 'block'; // Fait apparaitre la porte
       if (data.status === 'lobby') showScreen('screen-lobby');
     });
+
+    // Fonction pour quitter manuellement
+    function leaveGame() {
+        if(confirm("Veux-tu vraiment quitter cette partie ?")) {
+            socket.emit('leaveGame', { code: myCode });
+            localStorage.removeItem('gameCode');
+            window.location.reload();
+        }
+    }
 
     socket.on('updatePlayers', (players) => {
       const list = document.getElementById('players-list');
