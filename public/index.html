@@ -40,9 +40,12 @@
     .btn-circle.cat-rouge { border: 2px solid #e74c3c; color: #e74c3c; }
     .btn-circle.cat-rouge:hover { background-color: #fdedec; }
     
-    .btn-circle.busted { border: 2px solid #9b59b6; color: #9b59b6; } 
-    .btn-circle.true { border: 2px solid #2ecc71; color: #2ecc71; }   
-    .btn-circle.false { border: 2px solid #e74c3c; color: #e74c3c; }  
+    /* Boutons de jugement Tribunal */
+    .btn-judge { padding: 12px 15px; border-radius: 25px; border: 2px solid; font-weight: bold; cursor: pointer; background: #fff; font-size: 14px; transition: transform 0.1s; }
+    .btn-judge:active { transform: scale(0.95); }
+    .btn-judge.busted { border-color: #9b59b6; color: #9b59b6; }
+    .btn-judge.false { border-color: #e74c3c; color: #e74c3c; }
+    .btn-judge.true { border-color: #2ecc71; color: #2ecc71; }
     
     .list-container { width: 100%; text-align: left; }
     .list-item { background: #fff; padding: 15px 20px; margin: 8px 0; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
@@ -236,10 +239,10 @@
             <p class="res-question">${data.question}</p>
             <p class="res-answer">“ ${data.answer} ”</p>
             <p style="text-align: center; color: #555;">Verdict ?</p>
-            <div class="action-buttons" style="position:relative; max-width: 100%; box-shadow:none; padding: 0;">
-              <button class="btn-circle busted" title="BUSTED!" onclick="scorePlayer('${data.id}', 'busted', this)">💜</button>
-              <button class="btn-circle false" title="Faux" onclick="scorePlayer('${data.id}', 'false', this)">✕</button>
-              <button class="btn-circle true" title="Vrai" onclick="scorePlayer('${data.id}', 'true', this)">♥</button>
+            <div class="action-buttons" style="position:relative; max-width: 100%; box-shadow:none; padding: 0; gap: 10px; flex-wrap: wrap;">
+              <button class="btn-judge busted" onclick="scorePlayer('${data.id}', 'busted', this)">❌ BUSTED</button>
+              <button class="btn-judge false" onclick="scorePlayer('${data.id}', 'false', this)">❌ FALSE</button>
+              <button class="btn-judge true" onclick="scorePlayer('${data.id}', 'true', this)">❤️ TRUE</button>
             </div>
           `;
           container.appendChild(div);
