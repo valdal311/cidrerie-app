@@ -8,39 +8,31 @@
     /* CSS STYLE TINDER */
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1a1a1a; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
     
-    /* Header type Tinder */
     .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); position: relative; }
     .header-title { font-size: 1.5em; font-weight: bold; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
     
-    /* Conteneur principal centrée */
     .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
     .screen { display: none; width: 100%; max-width: 380px; margin-top: 2vh; }
     .active { display: block; }
     
-    /* Les "Cards" type Tinder */
     .card { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 30px 20px; text-align: center; margin-bottom: 30px; }
     .card-title { font-size: 1.2em; color: #333; margin-top: 0; font-weight: 600; }
     
-    /* Profile Card spécifique à la cible */
     .profile-card { padding-top: 40px; padding-bottom: 40px; }
     .profile-card .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #FF9B9B 0%, #FFD1D1 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: bold; margin: 0 auto 20px; }
     .profile-card .target-name { font-size: 1.8em; font-weight: bold; color: #1a1a1a; margin: 0; }
     
-    /* Éléments de formulaire modernes */
     input[type="text"] { padding: 18px; width: calc(100% - 36px); margin: 15px 0; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; background-color: #fff; text-align: center; outline: none; transition: border-color 0.2s; }
     input[type="text"]:focus { border-color: #fd267d; }
     
-    /* Les gros boutons principaux coniques */
     .btn-pill { padding: 18px 30px; margin: 15px 0; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; width: 100%; box-shadow: 0 4px 10px rgba(253, 38, 125, 0.3); }
     .btn-gradient { background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); color: white; }
     .btn-gray { background: #fff; border: 2px solid #ddd; color: #555; box-shadow: none; }
     
-    /* La barre de boutons d'action circulaire en bas (Signature Tinder) */
     .action-buttons { display: flex; justify-content: center; gap: 20px; margin-top: auto; padding: 20px 0; width: 100%; max-width: 380px; position: sticky; bottom: 0; background-color: #f0f2f5; }
     .btn-circle { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background: #fff; outline: none; }
     .btn-circle:active { transform: scale(0.9); }
     
-    /* Couleurs boutons catégories */
     .btn-circle.cat-verte { border: 2px solid #2ecc71; color: #2ecc71; }
     .btn-circle.cat-verte:hover { background-color: #e8fcf0; }
     .btn-circle.cat-jaune { border: 2px solid #f1c40f; color: #f1c40f; }
@@ -48,17 +40,14 @@
     .btn-circle.cat-rouge { border: 2px solid #e74c3c; color: #e74c3c; }
     .btn-circle.cat-rouge:hover { background-color: #fdedec; }
     
-    /* Couleurs boutons Host Tribunal */
-    .btn-circle.busted { border: 2px solid #9b59b6; color: #9b59b6; } /* Violet pour Busted */
-    .btn-circle.true { border: 2px solid #2ecc71; color: #2ecc71; }   /* Vert pour Vrai */
-    .btn-circle.false { border: 2px solid #e74c3c; color: #e74c3c; }  /* Rouge pour Faux */
+    .btn-circle.busted { border: 2px solid #9b59b6; color: #9b59b6; } 
+    .btn-circle.true { border: 2px solid #2ecc71; color: #2ecc71; }   
+    .btn-circle.false { border: 2px solid #e74c3c; color: #e74c3c; }  
     
-    /* Listes épurées (Lobby/Scores) */
     .list-container { width: 100%; text-align: left; }
     .list-item { background: #fff; padding: 15px 20px; margin: 8px 0; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
     .item-rank { font-weight: bold; color: #fd267d; font-size: 1.2em; margin-right: 15px; }
     
-    /* Card Tribunal pour le Host */
     .resolution-card { background: #fff; padding: 20px; margin: 20px 0; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: left; }
     .resolution-card h3 { margin-top: 0; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .res-meta { color: #888; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
@@ -99,7 +88,7 @@
         <p class="res-meta">Code de la partie</p>
         <h2 id="display-code" style="color:#fd267d; font-size: 2.5em; margin: 5px 0;"></h2>
         <div id="players-list" class="list-container"></div>
-        <button id="btn-start" class="btn-pill btn-gradient" style="display:none;" onclick="startGame()">Lancer le Round 1</button>
+        <button id="btn-start" class="btn-pill btn-gradient" style="display:none;" onclick="startGame()">Lancer le Round</button>
         <p id="wait-host-msg" style="color: #888;">En attente du lancement par le Host...</p>
       </div>
     </div>
@@ -212,15 +201,10 @@
     // JEU
     function startGame() { socket.emit('startGame', myCode); }
     
-    socket.on('hostWaitAll', () => showScreen('screen-waiting'));
-    
     socket.on('startRound', ({ targetName }) => {
-      // Le host ne joue pas, il reste sur l'écran d'attente
-      if(!isHost) {
-          document.getElementById('target-name').innerText = targetName;
-          document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
-          showScreen('screen-category');
-      }
+      document.getElementById('target-name').innerText = targetName;
+      document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
+      showScreen('screen-category');
     });
 
     function selectCategory(category) { socket.emit('selectCategory', { code: myCode, category }); }
@@ -243,8 +227,6 @@
         const container = document.getElementById('resolutions-container');
         container.innerHTML = '';
         answersData.forEach(data => {
-          if(data.id === socket.id) return; // Le host ne s'affiche pas lui-même
-
           const div = document.createElement('div');
           div.className = 'resolution-card card';
           div.id = `res-${data.id}`;
@@ -293,9 +275,6 @@
     socket.on('backToLobby', () => {
       document.getElementById('answer-input').value = '';
       showScreen('screen-lobby');
-      if(isHost) {
-          document.getElementById('btn-start').innerText = "Lancer le Round Suivant";
-      }
     });
 
     socket.on('error', (msg) => alert(msg));
