@@ -1,7 +1,7 @@
 {
   "name": "jeu-valentin",
   "version": "1.0.0",
-  "description": "Jeu pour ce soir",
+  "description": "Jeu pour ce soir !",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
