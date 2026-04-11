@@ -1,66 +1,251 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Match & Reveal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secrets & Révélations</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1a1a1a; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-    .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
-    .header-title { font-size: 1.5em; font-weight: bold; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-    .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
-    .screen { display: none; width: 100%; max-width: 380px; margin-top: 2vh; }
-    .active { display: block; }
-    .card { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 30px 20px; text-align: center; margin-bottom: 30px; }
-    .profile-card { padding-top: 40px; padding-bottom: 40px; }
-    .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #FF9B9B 0%, #FFD1D1 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: bold; margin: 0 auto 20px; }
-    .target-name { font-size: 1.8em; font-weight: bold; color: #1a1a1a; margin: 0; }
-    input[type="text"] { padding: 18px; width: calc(100% - 36px); margin: 15px 0; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; text-align: center; outline: none; }
-    .btn-pill { padding: 18px 30px; margin: 10px 0; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
-    .btn-gradient { background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); color: white; box-shadow: 0 4px 10px rgba(253, 38, 125, 0.3); }
-    .btn-gray { background: #fff; border: 2px solid #ddd; color: #555; }
-    .action-buttons { display: flex; justify-content: center; gap: 20px; padding: 20px 0; }
-    .btn-circle { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: #1a1a1a;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .header {
+      background: #fff;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 1px 10px rgba(0,0,0,0.05);
+      position: relative;
+    }
+    .header-title {
+      font-size: 1.5em;
+      font-weight: bold;
+      background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
+    .app-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 380px;
+      margin-top: 2vh;
+    }
+    .active {
+      display: block;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      padding: 30px 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .profile-card {
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .profile-card .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF9B9B 0%, #FFD1D1 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5em;
+      font-weight: bold;
+      margin: 0 auto 20px;
+    }
+    .profile-card .target-name {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin: 0;
+    }
+    input[type="text"] {
+      padding: 18px;
+      width: calc(100% - 36px);
+      margin: 15px 0;
+      border-radius: 30px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      background-color: #fff;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus {
+      border-color: #fd267d;
+    }
+    .btn-pill {
+      padding: 18px 30px;
+      margin: 15px 0;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(253, 38, 125, 0.3);
+    }
+    .btn-gradient {
+      background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%);
+      color: white;
+    }
+    .btn-gray {
+      background: #fff;
+      border: 2px solid #ddd;
+      color: #555;
+      box-shadow: none;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: auto;
+      padding: 20px 0;
+      width: 100%;
+      max-width: 380px;
+      position: sticky;
+      bottom: 0;
+      background-color: #f0f2f5;
+    }
+    .btn-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      background: #fff;
+      outline: none;
+    }
     .btn-circle.cat-verte { border: 2px solid #2ecc71; color: #2ecc71; }
     .btn-circle.cat-jaune { border: 2px solid #f1c40f; color: #f1c40f; }
     .btn-circle.cat-rouge { border: 2px solid #e74c3c; color: #e74c3c; }
-    .btn-judge { padding: 12px 15px; border-radius: 25px; border: 2px solid; font-weight: bold; cursor: pointer; background: #fff; font-size: 14px; margin-bottom: 5px; }
+
+    .btn-judge {
+      padding: 12px 15px;
+      border-radius: 25px;
+      border: 2px solid;
+      font-weight: bold;
+      cursor: pointer;
+      background: #fff;
+      font-size: 14px;
+    }
     .btn-judge.busted { border-color: #9b59b6; color: #9b59b6; }
     .btn-judge.false { border-color: #e74c3c; color: #e74c3c; }
     .btn-judge.true { border-color: #2ecc71; color: #2ecc71; }
-    .list-item { background: #fff; padding: 15px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .resolution-card { background: #fff; padding: 20px; margin: 20px 0; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: left; }
-    .res-question { font-weight: 600; color: #333; margin: 10px 0; }
-    .res-answer { color: #fd267d; font-style: italic; margin-bottom: 15px; }
+
+    .list-item {
+      background: #fff;
+      padding: 15px 20px;
+      margin: 8px 0;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .resolution-card {
+      background: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 16px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      text-align: left;
+    }
+    .res-question {
+      font-weight: 600;
+      color: #333;
+      margin: 10px 0;
+      font-size: 1.1em;
+    }
+    .res-answer {
+      color: #fd267d;
+      font-size: 1.05em;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+    .muted {
+      color: #777;
+      font-size: 0.95em;
+    }
+    .status-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-online {
+      background: #eafaf1;
+      color: #2ecc71;
+    }
+    .status-offline {
+      background: #fff3e6;
+      color: #e67e22;
+    }
   </style>
 </head>
 <body>
-  <div class="header"><p class="header-title">MATCH & REVEAL</p></div>
+  <div class="header">
+    <p class="header-title">MATCH & REVEAL</p>
+  </div>
+
   <div class="app-container">
     <div id="screen-home" class="screen active">
       <div class="card">
-        <h1>🤫</h1><h2>Secrets & Révélations</h2>
-        <input type="text" id="join-name" placeholder="Ton Prénom">
+        <h1>🤫</h1>
+        <h2>Secrets & Révélations</h2>
+        <input type="text" id="join-name" placeholder="Ton Prénom" />
         <button class="btn-pill btn-gradient" onclick="createGame()">Créer une partie</button>
         <button class="btn-pill btn-gray" onclick="showScreenJoin()">Rejoindre</button>
       </div>
     </div>
+
     <div id="screen-join" class="screen">
       <div class="card">
         <h3>Entre le Code</h3>
-        <input type="text" id="join-code" placeholder="Code (4 lettres)" maxlength="4">
+        <input type="text" id="join-code" placeholder="Code (4 lettres)" maxlength="4" />
         <button class="btn-pill btn-gradient" onclick="joinGame()">Rejoindre la partie</button>
-        <button class="btn-pill btn-gray" onclick="showScreen('screen-home')">Retour</button>
       </div>
     </div>
+
     <div id="screen-lobby" class="screen">
       <div class="card">
-        <p style="text-transform: uppercase; color: #888; letter-spacing: 1px;">Code de la partie</p>
-        <h2 id="display-code" style="color:#fd267d; font-size: 2.8em; margin: 5px 0;">----</h2>
+        <div class="muted">Code de la partie</div>
+        <h2 id="display-code" style="color:#fd267d; font-size: 2.5em; margin: 5px 0;"></h2>
         <div id="players-list"></div>
         <button id="btn-start" class="btn-pill btn-gradient" style="display:none;" onclick="startGame()">Lancer le Round</button>
       </div>
     </div>
+
     <div id="screen-category" class="screen">
       <div class="card profile-card">
         <div class="avatar" id="target-avatar">?</div>
@@ -72,135 +257,279 @@
         <button class="btn-circle cat-rouge" onclick="selectCategory('rouge')">🔥</button>
       </div>
     </div>
+
     <div id="screen-question" class="screen">
-      <div class="card"><h3 id="question-text"></h3><input type="text" id="answer-input" placeholder="Ta réponse..."><button class="btn-pill btn-gradient" onclick="submitAnswer()">Valider</button></div>
+      <div class="card">
+        <h3 id="question-text"></h3>
+        <input type="text" id="answer-input" placeholder="Ta réponse..." />
+        <button class="btn-pill btn-gradient" onclick="submitAnswer()">Valider</button>
+      </div>
     </div>
-    <div id="screen-waiting" class="screen"><div class="card"><h2>⏳👀 Suspens...</h2><p>Attends que tout le monde ait fini.</p></div></div>
-    <div id="screen-host-resolution" class="screen"><div id="resolutions-container"></div><button class="btn-pill btn-gradient" onclick="showScores()">Voir les Scores</button></div>
-    <div id="screen-scores" class="screen"><div class="card"><h2>Classement</h2><div id="scores-list"></div><button id="btn-next-round" class="btn-pill btn-gradient" style="display:none;" onclick="nextRound()">Round Suivant</button></div></div>
+
+    <div id="screen-waiting" class="screen">
+      <div class="card">
+        <h2>⏳👀 Suspens...</h2>
+        <p class="muted">Tu restes dans la partie même si la connexion coupe un instant.</p>
+      </div>
+    </div>
+
+    <div id="screen-host-resolution" class="screen">
+      <div id="resolutions-container"></div>
+      <button class="btn-pill btn-gradient" onclick="showScores()">Voir les Scores</button>
+    </div>
+
+    <div id="screen-waiting-judgement" class="screen">
+      <div class="card">
+        <h2>🧑‍⚖️ Le host tranche…</h2>
+        <p class="muted">Attends pendant que les réponses sont jugées.</p>
+      </div>
+    </div>
+
+    <div id="screen-scores" class="screen">
+      <div class="card">
+        <h2>Classement</h2>
+        <div id="scores-list"></div>
+        <button id="btn-next-round" class="btn-pill btn-gradient" style="display:none;" onclick="nextRound()">Round Suivant</button>
+      </div>
+    </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
+    const socket = io({
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000
+    });
+
     let myCode = localStorage.getItem('gameCode') || '';
     let myName = localStorage.getItem('playerName') || '';
     let isHost = false;
 
-    socket.on('connect', () => {
-        if (myCode && myName) socket.emit('joinGame', { code: myCode, name: myName });
-    });
+    function getOrCreatePlayerId() {
+      let id = localStorage.getItem('playerId');
+      if (!id) {
+        if (window.crypto && crypto.randomUUID) {
+          id = crypto.randomUUID();
+        } else {
+          id = 'p_' + Math.random().toString(36).slice(2) + Date.now();
+        }
+        localStorage.setItem('playerId', id);
+      }
+      return id;
+    }
+
+    const playerId = getOrCreatePlayerId();
+
+    if (myName) {
+      document.getElementById('join-name').value = myName;
+    }
 
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+      const screen = document.getElementById(id);
+      if (screen) screen.classList.add('active');
+      window.scrollTo(0, 0);
     }
 
     function showScreenJoin() {
-      myName = document.getElementById('join-name').value;
-      if(!myName) return alert("Saisis ton prénom !");
+      myName = document.getElementById('join-name').value.trim();
+      if (!myName) return alert("Saisis ton prénom !");
       localStorage.setItem('playerName', myName);
       showScreen('screen-join');
     }
 
     function createGame() {
-      myName = document.getElementById('join-name').value;
+      myName = document.getElementById('join-name').value.trim();
       if (!myName) return alert("Saisis ton prénom !");
       localStorage.setItem('playerName', myName);
-      socket.emit('createGame');
+      socket.emit('createGame', { name: myName, playerId });
     }
+
+    function joinGame() {
+      const codeInput = document.getElementById('join-code').value.trim().toUpperCase();
+      myName = (document.getElementById('join-name').value.trim() || localStorage.getItem('playerName') || '').trim();
+
+      if (!myName) return alert("Saisis ton prénom !");
+      if (!codeInput) return alert("Entre un code de partie !");
+
+      myCode = codeInput;
+      localStorage.setItem('playerName', myName);
+      localStorage.setItem('gameCode', myCode);
+
+      socket.emit('joinGame', { code: myCode, name: myName, playerId });
+    }
+
+    socket.on('connect', () => {
+      if (myCode && myName) {
+        socket.emit('joinGame', { code: myCode, name: myName, playerId });
+      }
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Déconnecté du serveur.');
+    });
 
     socket.on('gameCreated', (code) => {
       myCode = code;
       localStorage.setItem('gameCode', code);
-      socket.emit('joinGame', { code, name: myName });
     });
 
-    function joinGame() {
-      myCode = document.getElementById('join-code').value.toUpperCase();
-      myName = localStorage.getItem('playerName');
-      if (myCode && myName) {
-          localStorage.setItem('gameCode', myCode);
-          socket.emit('joinGame', { code: myCode, name: myName });
-      }
-    }
-
     socket.on('joined', (data) => {
-      myCode = data.gameCode; // Correction ici : data.gameCode au lieu de data
+      myCode = data.code;
       isHost = data.isHost;
-      if (isHost) {
-          document.getElementById('btn-start').style.display = 'block';
-          document.getElementById('btn-next-round').style.display = 'block';
-      }
+
+      localStorage.setItem('gameCode', myCode);
+
       document.getElementById('display-code').innerText = myCode;
-      if (data.status === 'lobby') showScreen('screen-lobby');
+      document.getElementById('btn-start').style.display = isHost ? 'block' : 'none';
+      document.getElementById('btn-next-round').style.display = isHost ? 'block' : 'none';
+
+      if (data.status === 'lobby') {
+        showScreen('screen-lobby');
+      }
+    });
+
+    socket.on('goToLobby', ({ code }) => {
+      myCode = code;
+      document.getElementById('display-code').innerText = myCode;
+      document.getElementById('answer-input').value = '';
+      showScreen('screen-lobby');
     });
 
     socket.on('updatePlayers', (players) => {
       const list = document.getElementById('players-list');
       list.innerHTML = '';
-      players.forEach(p => {
-        list.innerHTML += `<div class="list-item"><span>${p.name}</span> <span style="color: #2ecc71;">✓</span></div>`;
+
+      players.forEach((p) => {
+        const statusClass = p.connected ? 'status-online' : 'status-offline';
+        const statusText = p.connected ? 'Connecté' : 'Hors ligne';
+
+        list.innerHTML += `
+          <div class="list-item">
+            <span>${escapeHtml(p.name)}</span>
+            <span class="status-pill ${statusClass}">${statusText}</span>
+          </div>
+        `;
       });
     });
 
-    function startGame() { socket.emit('startGame', myCode); }
+    function startGame() {
+      socket.emit('startGame', myCode);
+    }
+
     socket.on('startRound', ({ targetName }) => {
       document.getElementById('target-name').innerText = targetName;
-      document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
+      document.getElementById('target-avatar').innerText = (targetName?.[0] || '?').toUpperCase();
       showScreen('screen-category');
     });
-    function selectCategory(category) { socket.emit('selectCategory', { code: myCode, category }); }
+
+    function selectCategory(category) {
+      socket.emit('selectCategory', { code: myCode, category });
+    }
+
     socket.on('questionAssigned', (question) => {
       document.getElementById('question-text').innerText = question;
       showScreen('screen-question');
     });
+
     function submitAnswer() {
-      const answer = document.getElementById('answer-input').value;
-      if(answer) socket.emit('submitAnswer', { code: myCode, answer });
+      const answer = document.getElementById('answer-input').value.trim();
+      if (!answer) return alert('Écris une réponse.');
+      socket.emit('submitAnswer', { code: myCode, answer });
     }
-    socket.on('waitingForOthers', () => showScreen('screen-waiting'));
-    socket.on('allAnswersSubmitted', (answersData) => {
-      if (isHost) {
-        const container = document.getElementById('resolutions-container');
-        container.innerHTML = '';
-        answersData.forEach(data => {
-          const div = document.createElement('div');
-          div.className = 'resolution-card';
-          div.innerHTML = `
-            <h3>${data.name} ➔ ${data.targetName}</h3>
-            <p class="res-question">${data.question}</p>
-            <p class="res-answer">“ ${data.answer} ”</p>
-            <div style="display:flex; gap:5px; flex-wrap:wrap;">
-              <button class="btn-judge busted" onclick="scorePlayer('${data.id}', 'busted', this)">❌ BUSTED</button>
-              <button class="btn-judge false" onclick="scorePlayer('${data.id}', 'false', this)">❌ FALSE</button>
-              <button class="btn-judge true" onclick="scorePlayer('${data.id}', 'true', this)">❤️ TRUE</button>
-            </div>`;
-          container.appendChild(div);
-        });
-        showScreen('screen-host-resolution');
-      }
+
+    socket.on('waitingForOthers', () => {
+      showScreen('screen-waiting');
     });
+
+    socket.on('waitingForJudgement', () => {
+      showScreen('screen-waiting-judgement');
+    });
+
+    socket.on('allAnswersSubmitted', (answersData) => {
+      if (!isHost) return;
+
+      const container = document.getElementById('resolutions-container');
+      container.innerHTML = '';
+
+      answersData.forEach((data) => {
+        const div = document.createElement('div');
+        div.className = 'resolution-card';
+
+        div.innerHTML = `
+          <h3>${escapeHtml(data.name)} cible ${escapeHtml(data.targetName)}</h3>
+          <p class="res-question">${escapeHtml(data.question)}</p>
+          <p class="res-answer">“ ${escapeHtml(data.answer)} ”</p>
+          <div class="action-buttons" style="gap:10px;">
+            <button class="btn-judge busted" onclick="scorePlayer('${data.playerId}', 'busted', this)">❌ BUSTED</button>
+            <button class="btn-judge false" onclick="scorePlayer('${data.playerId}', 'false', this)">❌ FALSE</button>
+            <button class="btn-judge true" onclick="scorePlayer('${data.playerId}', 'true', this)">❤️ TRUE</button>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+
+      showScreen('screen-host-resolution');
+    });
+
     function scorePlayer(playerId, action, btn) {
       socket.emit('scorePlayer', { code: myCode, playerId, action });
       btn.parentElement.style.opacity = '0.3';
       btn.parentElement.style.pointerEvents = 'none';
     }
-    function showScores() { socket.emit('showScores', myCode); }
+
+    function showScores() {
+      socket.emit('showScores', myCode);
+    }
+
     socket.on('displayScores', (scores) => {
       const list = document.getElementById('scores-list');
       list.innerHTML = '';
+
       scores.forEach((s, idx) => {
-        list.innerHTML += `<div class="list-item"><span>#${idx + 1} ${s.name}</span><strong>${s.score} pts</strong></div>`;
+        list.innerHTML += `
+          <div class="list-item">
+            <span>#${idx + 1} ${escapeHtml(s.name)}</span>
+            <strong>${s.score} pts</strong>
+          </div>
+        `;
       });
+
       showScreen('screen-scores');
     });
-    function nextRound() { socket.emit('nextRound', myCode); }
+
+    function nextRound() {
+      document.getElementById('answer-input').value = '';
+      socket.emit('nextRound', myCode);
+    }
+
     socket.on('backToLobby', () => {
       document.getElementById('answer-input').value = '';
       showScreen('screen-lobby');
     });
-    socket.on('error', (msg) => alert(msg));
+
+    socket.on('errorMessage', (msg) => {
+      alert(msg);
+    });
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && myCode && myName && socket.connected) {
+        socket.emit('joinGame', { code: myCode, name: myName, playerId });
+      }
+    });
   </script>
 </body>
 </html>
