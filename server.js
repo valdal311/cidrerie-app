@@ -10,89 +10,90 @@ app.use(express.static('public'));
 
 const questions = {
   verte: [
-    "Depuis combien de temps tu connais Valentin ? / How long have you known Valentin?",
-    "Comment t’as connu Valentin ? / How did you meet Valentin?",
-    "Si Valentin devait être un Animal ça serait quoi ? / If Valentin were an animal, what would he be?",
-    "Est-ce que Valentin est plus fort que toi au surf ? / Is Valentin better at surfing than you?",
-    "Est-ce que Valentin cuisine mieux qu'il ne surfe ? / Does Valentin cook better than he surfs?",
-    "C’est quoi le premier truc que Valentin t’a appris ? / What is the first thing Valentin taught you?",
-    "Quel est le surnom le plus ridicule de Valentin ? / What is Valentin's most ridiculous nickname?",
-    "Est-ce que Valentin est plutôt avance ou retard ? / Is Valentin early or late?",
-    "S'il gagnait au loto, il achèterait quoi ? / If he won the lottery, what would he buy?",
-    "Quel émoji Valentin utilise le plus ? / Which emoji does Valentin use most?",
-    "Est-ce que Valentin chante bien ? / Does Valentin sing well?",
-    "C'est quoi la manie la plus drôle de Valentin ? / What's Valentin's funniest habit?",
-    "Valentin dans une émission TV : laquelle ? / Valentin in a TV show: which one?",
-    "Qui est le plus sage en soirée ? / Who is the best behaved when going out?",
-    "Valentin : plutôt sucré ou salé ? / Valentin: sweet or savory?",
-    "Comment t’es venu ce soir ? / How did you get here tonight?",
-    "Qu’est ce que t’as pris à manger ? / What did you have to eat?",
-    "Qu’est-ce que tu fais ce weekend ? / What are you doing this weekend?",
-    "T’es plutôt montagne ou océan ? / More of a mountain or ocean person?",
-    "Team Chien ou Team Chat ? / Team Dog or Team Cat?",
-    "C’est quoi ton prochain lieu de vacances ? / Where's your next vacation?",
-    "Ta destination de rêve ? / Your dream destination?",
-    "Série binge-watchée le plus vite ? / Series you binged the fastest?",
-    "Dernière série terminée ? / Last series you finished?",
-    "Ton endroit préféré pour boire un verre ? / Favorite place for a drink?",
-    "Plat individuel ou partage genre tapas ? / Individual dish or sharing tapas?",
-    "T’aimes bien les grandes tablées ? / Do you like big dinner parties?",
-    "Cuisson de ta viande ? / How do you like your meat?",
-    "Film préféré à voir 100 fois ? / Movie you'd watch 100 times?",
-    "Dernier livre marquant ? / Last book that marked you?",
-    "Aliment détesté au monde ? / Food you hate most in the world?",
-    "Ton humoriste préféré ? / Your favorite comedian?",
-    "Dernière fois en cidrerie ? / Last time in a cider house?",
-    "Ton sport de prédilection ? / Your best sport?",
-    "Meilleur truc mangé en cidrerie ? / Best thing eaten in a cider house?"
+    "Depuis combien de temps tu connais Valentin ?",
+    "Comment t’as connu Valentin ?",
+    "Si Valentin devait être un Animal ça serait quoi ?",
+    "Est-ce que Valentin est plus fort que toi au surf ?",
+    "Est-ce que Valentin cuisine mieux qu'il ne surfe ?",
+    "C’est quoi le premier truc que Valentin t’a appris (ou essayé de t’apprendre) ?",
+    "Quel est le surnom le plus ridicule que tu donnes à Valentin ?",
+    "Est-ce que Valentin est du genre à arriver en avance ou toujours 10 min après ?",
+    "Si Valentin gagnait au loto, il achèterait quoi en premier selon toi ?",
+    "Quel est l'émoji que Valentin utilise le plus ?",
+    "Est-ce que Valentin chante bien ?",
+    "C'est quoi la manie la plus drôle de Valentin ?",
+    "Si Valentin devait participer à une émission de télé, ce serait laquelle ?",
+    "Qui est le plus sage des deux quand vous sortez ?",
+    "A ton avis Valentin il est plutot sucré ou salé ?",
+    "Comment t’es venu ce soir ?",
+    "Qu’est ce que t’as pris à manger ce soir ?",
+    "Qu’est-ce que tu fais ce weekend ?",
+    "C’est quoi ton programme pour demain matin ?",
+    "T’es plutôt montagne ou océan ?",
+    "Tu es plutôt 'Team Chien' ou 'Team Chat' ?",
+    "C’est quoi ton prochain lieu de vacances ?",
+    "Quelle est ta destination de rêve absolue ?",
+    "Quelle est la série que tu as 'binge-watchée' le plus vite ?",
+    "C'est quoi la dernière série que t'as terminée ?",
+    "Quel est ton endroit préféré pour boire un verre dans le coin ?",
+    "Tu préfères que chacun prenne son plat ou partager genre tapas ?",
+    "T’aimes bien les grandes tablées ?",
+    "Tu la prends comment ta viande ?",
+    "Quel est ton film préféré que tu peux voir 100 fois ?",
+    "Quel est le dernier livre qui t'a vraiment marqué ?",
+    "Quel est l'aliment que tu détestes le plus au monde ?",
+    "Quel est ton humoriste préféré ?",
+    "C’est quand la dernière fois que t’as déjà été à une cidrerie ?",
+    "Quel est le sport dans lequel tu excelles le plus ?",
+    "C’est quoi le meilleur truc que t’aies mangé dans une cidrerie ?"
   ],
   jaune: [
-    "Premier achat si tu gagnes au loto ? / First thing you buy if you win the lottery?",
-    "Ton super-pouvoir de rêve ? / Your dream superpower?",
-    "Dîner avec une star (morte ou vive) ? / Dinner with a star (dead or alive)?",
-    "Un seul objet sur une île déserte ? / One object on a desert island?",
-    "Ton métier de rêve enfant ? / Dream job as a kid?",
-    "Ta Madeleine de Proust (odeur/goût) ? / Your Proust's Madeleine (smell/taste)?",
-    "Dessin animé préféré d'enfance ? / Favorite childhood cartoon?",
-    "Ta chanson plaisir coupable ? / Your guilty pleasure song?",
-    "Ton talent inutile ? / Your useless talent?",
-    "Invisible pendant 24h : tu fais quoi ? / Invisible for 24h: what do you do?",
-    "Nouveau prénom choisi ? / If you had to choose a new name?",
-    "Ce qui te fait rire à tous les coups ? / What always makes you laugh?",
-    "Premier truc regardé chez quelqu'un ? / First thing you notice in someone?",
-    "Ton concept de restaurant ? / Your restaurant concept?",
-    "Ta passion qui fait oublier de manger ? / Passion that makes you forget to eat?",
-    "Ta plus grande qualité ? / Your greatest quality?",
-    "Meilleur conseil reçu ? / Best advice ever received?",
-    "Objet le plus bizarre chez toi ? / Weirdest object at your home?",
-    "Ton vieux pseudo MSN/Skyblog ? / Your old MSN/Skyblog username?",
-    "Déjà confondu avec quelqu'un ? / Ever been mistaken for someone else?",
-    "Si tu étais une star, qui serais-tu ? / If you were a star, who would you be?"
+    "Si tu gagnais au loto demain, quelle est la première chose que tu achèterais ?",
+    "Si tu pouvais avoir un super-pouvoir, lequel choisirais-tu ?",
+    "Si tu pouvais dîner avec une personnalité (morte ou vive), qui serait-ce ?",
+    "Quel objet emporterais-tu sur une île déserte (un seul !) ?",
+    "Quel métier rêvais-tu de faire quand tu étais petit ?",
+    "Quelle est ta Madeleine de Proust (une odeur, un goût qui te ramène en enfance) ?",
+    "Quel était ton dessin animé préféré que tu regardais en boucle ?",
+    "Quelle est ta chanson 'plaisir coupable' (que tu écoutes en cachette) ?",
+    "Quel est ton talent inutile (ex: faire le trèfle avec sa langue) ?",
+    "Que ferais-tu si tu étais invisible pendant 24 heures ?",
+    "Si tu devais changer de prénom, lequel choisirais-tu ?",
+    "Qu'est-ce qui te fait immédiatement rire à tous les coups ?",
+    "Quelle est la première chose que tu regardes chez quelqu'un ?",
+    "Si tu devais ouvrir un restaurant, ça serait quoi le concept ?",
+    "C'est quoi ta plus grande passion, celle qui te fait oublier de manger ?",
+    "Quelle est ta plus grande qualité (celle que tes amis citent toujours) ?",
+    "Quel est le meilleur conseil qu'on t'ait jamais donné ?",
+    "Quel est l'objet le plus bizarre que tu possèdes chez toi ?",
+    "Quel était ton adresse msn ou ton pseudo skyblog ?",
+    "T’as déjà été confondu avec quelqu’un d’autre ?",
+    "Si tu étais une star, tu serais qui ?"
   ],
   rouge: [
-    "Ta plus grande peur irrationnelle ? / Your biggest irrational fear?",
-    "Tes 3 ingrédients du bonheur ? / Your 3 ingredients for happiness?",
-    "Chose dont tu es le moins fier ? / Thing you're least proud of?",
-    "Qui appeler en cas de gros pépin ? / Who to call in a major crisis?",
-    "Ton plus gros défaut ? / Your biggest flaw?",
-    "Ta devise dans la vie ? / Your motto in life?",
-    "Pire souvenir d'école ? / Worst school memory?",
-    "Croyance absurde gardée longtemps ? / Absurd belief held for a long time?",
-    "Pire cadeau reçu ? / Worst gift received?",
-    "Ta première loi si tu es Président ? / Your first law as President?",
-    "Pire application sur ton tel ? / Worst app on your phone?",
-    "Ton mensonge le plus culotté ? / Your boldest lie?",
-    "Pire gaffe en public ? / Worst public blunder?",
-    "Pire blessure physique ? / Worst physical injury?",
-    "Chose la plus courageuse faite ? / Bravest thing you've done?",
-    "Ta plus grande réussite ? / Your greatest achievement?",
-    "Titre de film pour ta vie ? / Movie title for your life?",
-    "Musique pour ta vie ? / Song for your life?",
-    "Pire expérience culinaire ? / Worst culinary experience?",
-    "À faire avant de mourir ? / To do before you die?",
-    "Aliment impossible à partager ? / Food impossible to share?",
-    "Finir l'assiette des autres ? / Do you finish others' plates?",
-    "Partage du plat avec ton/ta partenaire ? / Do you share food with your partner?"
+    "Quelle est ta plus grande peur irrationnelle ?",
+    "Quels sont tes 3 ingrédients du bonheur ?",
+    "Quelle est la chose dont tu n'es pas le plus fier ?",
+    "Qui est la personne que tu appellerais en premier en cas de gros problème ?",
+    "Quel est ton plus gros défaut (celui qui agace tout le monde) ?",
+    "Quel est ton motto in life (ta devise) ?",
+    "Quel est ton pire souvenir d'école (la honte totale) ?",
+    "Quelle est la croyance absurde que tu as gardée le plus longtemps ?",
+    "Quel est le pire cadeau qu'on t'ait jamais offert ?",
+    "Si tu étais un Président, quelle est la première loi que mettrais-tu en place ?",
+    "Quelle est la pire application sur ton téléphone (celle que tu devrais supprimer) ?",
+    "Quel est le mensonge le plus culotté que tu aies jamais dit ?",
+    "Quelle est la pire gaffe que tu aies faite en public ?",
+    "Quelle est la pire blessure que tu t’aies faites ?",
+    "Quelle est la chose la plus courageuse que tu aies faite ?",
+    "Quelle est ta plus grande réussite personnelle ?",
+    "Si tu devais décrire ta vie en un titre de film, ce serait lequel ?",
+    "Si tu devais décrire ta vie en une musique ça serait laquelle ?",
+    "Quelle est la pire expérience culinaire que t'as eue ?",
+    "Quelle est la chose que tu veux faire à tout prix avant de mourir ?",
+    "Quel est l'aliment que tu ne pourrais jamais partager ?",
+    "T'es plutôt du genre à finir les assiettes des autres ?",
+    "T’as un ou une partenaire elle veut piquer dans ton plat tu partages ?"
   ]
 };
 
@@ -134,17 +135,14 @@ io.on('connection', (socket) => {
   socket.on('joinGame', ({ code, name }) => {
     code = code.toUpperCase();
     if (games[code]) {
-      // Recherche si le joueur était déjà là avec son Prénom
       let existingPlayerId = Object.keys(games[code].players).find(id => games[code].players[id].name === name);
       
       if (existingPlayerId) {
-          // Mise à jour de sa connexion UNIQUEMENT (on garde son ancienne identité)
           games[code].players[existingPlayerId].currentSocketId = socket.id;
           if (games[code].host === existingPlayerId) {
               games[code].currentHostSocketId = socket.id;
           }
       } else {
-          // Nouveau Joueur
           if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
           games[code].players[socket.id] = { 
               id: socket.id, 
@@ -166,7 +164,6 @@ io.on('connection', (socket) => {
       
       socket.emit('joined', { gameCode: code, status: games[code].status, isHost });
       
-      // Rattrapage de l'écran en cours si reconnexion
       if (games[code].status === 'playing') {
           socket.emit('startRound', { targetName: games[code].players[player.targetId].name });
           if (player.question) socket.emit('questionAssigned', player.question);
@@ -246,7 +243,6 @@ io.on('connection', (socket) => {
 
   socket.on('scorePlayer', ({ code, playerId, action }) => {
     const game = games[code];
-    // Seul le Host actuel a le droit de scorer
     if (game && game.currentHostSocketId === socket.id) {
       const player = game.players[playerId];
       if (player) {
@@ -274,7 +270,6 @@ io.on('connection', (socket) => {
       if (game && game.currentHostSocketId === socket.id) {
           game.round += 1;
           game.status = 'lobby';
-          // Réinitialise le statut des joueurs
           Object.keys(game.players).forEach(id => {
               game.players[id].status = 'waiting';
           });
