@@ -8,8 +8,9 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
+// Tes questions exactes
 const questions = {
-  verte: [
+  "categorie_verte_faciles_et_valentin": [
     "Depuis combien de temps tu connais Valentin ?",
     "Comment t’as connu Valentin ?",
     "Si Valentin devait être un Animal ça serait quoi ?",
@@ -47,7 +48,7 @@ const questions = {
     "Quel est le sport dans lequel tu excelles le plus ?",
     "C’est quoi le meilleur truc que t’aies mangé dans une cidrerie ?"
   ],
-  jaune: [
+  "categorie_jaune_intermediaires": [
     "Si tu gagnais au loto demain, quelle est la première chose que tu achèterais ?",
     "Si tu pouvais avoir un super-pouvoir, lequel choisirais-tu ?",
     "Si tu pouvais dîner avec une personnalité (morte ou vive), qui serait-ce ?",
@@ -70,7 +71,7 @@ const questions = {
     "T’as déjà été confondu avec quelqu’un d’autre ?",
     "Si tu étais une star, tu serais qui ?"
   ],
-  rouge: [
+  "categorie_rouge_intimes_et_profondes": [
     "Quelle est ta plus grande peur irrationnelle ?",
     "Quels sont tes 3 ingrédients du bonheur ?",
     "Quelle est la chose dont tu n'es pas le plus fier ?",
@@ -145,11 +146,7 @@ io.on('connection', (socket) => {
       } else {
           if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
           games[code].players[socket.id] = { 
-              id: socket.id, 
-              currentSocketId: socket.id, 
-              name, 
-              score: 0, 
-              status: 'waiting' 
+              id: socket.id, currentSocketId: socket.id, name, score: 0, status: 'waiting' 
           };
           if (games[code].host === socket.id) {
               games[code].currentHostSocketId = socket.id;
@@ -161,7 +158,6 @@ io.on('connection', (socket) => {
 
       socket.join(code);
       io.to(code).emit('updatePlayers', Object.values(games[code].players));
-      
       socket.emit('joined', { gameCode: code, status: games[code].status, isHost });
       
       if (games[code].status === 'playing') {
@@ -210,9 +206,15 @@ io.on('connection', (socket) => {
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
-        const qList = questions[category];
+        // Lien entre les couleurs et tes nouvelles catégories
+        let catKey = "";
+        if (category === 'verte') catKey = "categorie_verte_faciles_et_valentin";
+        if (category === 'jaune') catKey = "categorie_jaune_intermediaires";
+        if (category === 'rouge') catKey = "categorie_rouge_intimes_et_profondes";
+
+        const qList = questions[catKey];
         const randomQ = qList[Math.floor(Math.random() * qList.length)];
-        game.players[playerId].category = category;
+        game.players[playerId].category = category; // Gardé pour les points (+1, +2, +3)
         game.players[playerId].question = randomQ;
         game.players[playerId].status = 'answering';
         socket.emit('questionAssigned', randomQ);
@@ -275,6 +277,26 @@ io.on('connection', (socket) => {
           });
           io.to(code).emit('backToLobby');
       }
+  });
+
+  // GESTION DU BOUTON QUITTER
+  socket.on('leaveGame', ({ code }) => {
+    const game = games[code];
+    if (game) {
+      const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
+      if (playerId) {
+        if (game.host === playerId) {
+            // Si le Leader quitte, on supprime la partie pour libérer tout le monde
+            delete games[code];
+            io.to(code).emit('error', 'Le Leader a fermé la partie.');
+        } else {
+            // Un joueur normal quitte
+            delete game.players[playerId];
+            io.to(code).emit('updatePlayers', Object.values(game.players));
+        }
+      }
+    }
+    socket.leave(code);
   });
 });
 
