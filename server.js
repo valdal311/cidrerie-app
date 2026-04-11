@@ -16,7 +16,7 @@ const questions = {
     "Si tu gagnais au loto demain, quelle est la première chose que tu achèterais ?", "Si tu pouvais avoir un super-pouvoir, lequel choisirais-tu ?", "Si tu pouvais dîner avec une personnalité (morte ou vive), qui serait-ce ?", "Quel objet emporterais-tu sur une île déserte (un seul !) ?", "Quel métier rêvais-tu de faire quand tu étais petit ?", "Quelle est ta Madeleine de Proust (une odeur, un goût qui te ramène en enfance) ?", "Quel était ton dessin animé préféré que tu regardais en boucle ?", "Quelle est ta chanson 'plaisir coupable' (que tu écoutes en cachette) ?", "Quel est ton talent inutile (ex: faire le trèfle avec sa langue) ?", "Que ferais-tu si tu étais invisible pendant 24 heures ?", "Si tu devais changer de prénom, lequel choisirais-tu ?", "Qu'est-ce qui te fait immédiatement rire à tous les coups ?", "Quelle est la première chose que tu regardes chez quelqu'un ?", "Si tu devais ouvrir un restaurant, ça serait quoi le concept ?", "C'est quoi ta plus grande passion, celle qui te fait oublier de manger ?", "Quelle est ta plus grande qualité (celle que tes amis citent toujours) ?", "Quel est le meilleur conseil qu'on t'ait jamais donné ?", "Quel est l'objet le plus bizarre que tu possèdes chez toi ?", "Quel était ton adresse msn ou ton pseudo skyblog ?", "T’as déjà été confondu avec quelqu’un d’autre ?", "Si tu étais une star, tu serais qui ?"
   ],
   rouge: [
-    "Quelle est ta plus grande peur irrationnelle ?", "Quels sont tes 3 ingrédients du bonheur ?", "Quelle est la chose dont tu n'es pas le plus fier ?", "Qui est la personne que tu appellerais en premier en cas de gros problème ?", "Quel est ton plus gros défaut (celui qui agace tout le monde) ?", "Quel est ton motto in life (ta devise) ?", "Quel est ton pire souvenir d'école (la honte totale) ?", "Quelle est la croyance absurde que tu as gardée le plus longtemps ?", "Quel est le pire cadeau qu'on t'ait jamais offert ?", "Si tu étais un Président, quelle est la première loi que mettriis-tu en place ?", "Quelle est la pire application sur ton téléphone (celle que tu devrais supprimer) ?", "Quel est le mensonge le plus culotté que tu aies jamais dit ?", "Quelle est la pire gaffe que tu aies faite en public ?", "Quelle est la pire blessure que tu t’aies faites ?", "Quelle est la chose la plus courageuse que tu aies faite ?", "Quelle est ta plus grande réussite personnelle ?", "Si tu devais décrire ta vie en un titre de film, ce serait lequel ?", "Si tu devais décrire ta vie en une musique ça serait laquelle ?", "Quelle est la pire expérience culinaire que t'as eue ?", "Quelle est la chose que tu veux faire à tout prix avant de mourir ?", "Quel est l'aliment que tu ne pourrais jamais partager ?", "T'es plutôt du genre à finir les assiettes des autres ?", "T’as un ou une partenaire elle veut piquer dans ton plat tu partages ?"
+    "Quelle est ta plus grande peur irrationnelle ?", "Quels sont tes 3 ingrédients du bonheur ?", "Quelle est la chose dont tu n'es pas le plus fier ?", "Qui est la personne que tu appellerais en premier en cas de gros problème ?", "Quel est ton plus gros défaut (celui qui agace tout le monde) ?", "Quel est ton motto in life (ta devise) ?", "Quel est ton pire souvenir d'école (la honte totale) ?", "Quelle est la croyance absurde que tu as gardée le plus longtemps ?", "Quel est le pire cadeau qu'on t'ait jamais offert ?", "Si tu étais un Président, quelle est la première loi que mettrais-tu en place ?", "Quelle est la pire application sur ton téléphone (celle que tu devrais supprimer) ?", "Quel est le mensonge le plus culotté que tu aies jamais dit ?", "Quelle est la pire gaffe que tu aies faite en public ?", "Quelle est la pire blessure que tu t’aies faites ?", "Quelle est la chose la plus courageuse que tu aies faite ?", "Quelle est ta plus grande réussite personnelle ?", "Si tu devais décrire ta vie en un titre de film, ce serait lequel ?", "Si tu devais décrire ta vie en une musique ça serait laquelle ?", "Quelle est la pire expérience culinaire que t'as eue ?", "Quelle est la chose que tu veux faire à tout prix avant de mourir ?", "Quel est l'aliment que tu ne pourrais jamais partager ?", "T'es plutôt du genre à finir les assiettes des autres ?", "T’as un ou une partenaire elle veut piquer dans ton plat tu partages ?"
   ]
 };
 
@@ -82,7 +82,6 @@ io.on('connection', (socket) => {
         
         io.to(id).emit('startRound', { targetName: game.players[targets[index]].name });
       });
-      socket.emit('hostWaitAll');
     }
   });
 
@@ -152,9 +151,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// On récupère le port fourni par Klutch.sh, sinon on utilise 3000 par défaut
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Serveur lancé ! Trouve ton adresse IP locale (ex: 192.168.1.X) et demande aux joueurs d'aller sur http://TON_IP:${PORT}`);
+  console.log(`Serveur lancé sur le port ${PORT}`);
 });
