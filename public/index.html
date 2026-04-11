@@ -3,37 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Secrets & Révélations</title>
+  <title>Match & Reveal</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1a1a1a; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-    .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); position: relative; }
+    .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); }
     .header-title { font-size: 1.5em; font-weight: bold; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
     .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
     .screen { display: none; width: 100%; max-width: 380px; margin-top: 2vh; }
     .active { display: block; }
     .card { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 30px 20px; text-align: center; margin-bottom: 30px; }
     .profile-card { padding-top: 40px; padding-bottom: 40px; }
-    .profile-card .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #FF9B9B 0%, #FFD1D1 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: bold; margin: 0 auto 20px; }
-    .profile-card .target-name { font-size: 1.8em; font-weight: bold; color: #1a1a1a; margin: 0; }
-    input[type="text"] { padding: 18px; width: calc(100% - 36px); margin: 15px 0; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; background-color: #fff; text-align: center; outline: none; transition: border-color 0.2s; }
-    input[type="text"]:focus { border-color: #fd267d; }
-    .btn-pill { padding: 18px 30px; margin: 15px 0; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; width: 100%; box-shadow: 0 4px 10px rgba(253, 38, 125, 0.3); }
-    .btn-gradient { background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); color: white; }
-    .btn-gray { background: #fff; border: 2px solid #ddd; color: #555; box-shadow: none; }
-    .action-buttons { display: flex; justify-content: center; gap: 20px; margin-top: auto; padding: 20px 0; width: 100%; max-width: 380px; position: sticky; bottom: 0; background-color: #f0f2f5; }
-    .btn-circle { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background: #fff; outline: none; }
+    .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #FF9B9B 0%, #FFD1D1 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: bold; margin: 0 auto 20px; }
+    .target-name { font-size: 1.8em; font-weight: bold; color: #1a1a1a; margin: 0; }
+    input[type="text"] { padding: 18px; width: calc(100% - 36px); margin: 15px 0; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; text-align: center; outline: none; }
+    .btn-pill { padding: 18px 30px; margin: 10px 0; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
+    .btn-gradient { background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); color: white; box-shadow: 0 4px 10px rgba(253, 38, 125, 0.3); }
+    .btn-gray { background: #fff; border: 2px solid #ddd; color: #555; }
+    .action-buttons { display: flex; justify-content: center; gap: 20px; padding: 20px 0; }
+    .btn-circle { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
     .btn-circle.cat-verte { border: 2px solid #2ecc71; color: #2ecc71; }
     .btn-circle.cat-jaune { border: 2px solid #f1c40f; color: #f1c40f; }
     .btn-circle.cat-rouge { border: 2px solid #e74c3c; color: #e74c3c; }
-    .btn-judge { padding: 12px 15px; border-radius: 25px; border: 2px solid; font-weight: bold; cursor: pointer; background: #fff; font-size: 14px; }
+    .btn-judge { padding: 12px 15px; border-radius: 25px; border: 2px solid; font-weight: bold; cursor: pointer; background: #fff; font-size: 14px; margin-bottom: 5px; }
     .btn-judge.busted { border-color: #9b59b6; color: #9b59b6; }
     .btn-judge.false { border-color: #e74c3c; color: #e74c3c; }
     .btn-judge.true { border-color: #2ecc71; color: #2ecc71; }
-    .list-item { background: #fff; padding: 15px 20px; margin: 8px 0; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
-    .item-rank { font-weight: bold; color: #fd267d; font-size: 1.2em; margin-right: 15px; }
+    .list-item { background: #fff; padding: 15px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .resolution-card { background: #fff; padding: 20px; margin: 20px 0; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: left; }
-    .res-question { font-weight: 600; color: #333; margin: 10px 0; font-size: 1.1em; }
-    .res-answer { color: #fd267d; font-size: 1.05em; margin-bottom: 20px; font-style: italic; }
+    .res-question { font-weight: 600; color: #333; margin: 10px 0; }
+    .res-answer { color: #fd267d; font-style: italic; margin-bottom: 15px; }
   </style>
 </head>
 <body>
@@ -52,11 +50,13 @@
         <h3>Entre le Code</h3>
         <input type="text" id="join-code" placeholder="Code (4 lettres)" maxlength="4">
         <button class="btn-pill btn-gradient" onclick="joinGame()">Rejoindre la partie</button>
+        <button class="btn-pill btn-gray" onclick="showScreen('screen-home')">Retour</button>
       </div>
     </div>
     <div id="screen-lobby" class="screen">
       <div class="card">
-        <h2 id="display-code" style="color:#fd267d; font-size: 2.5em; margin: 5px 0;"></h2>
+        <p style="text-transform: uppercase; color: #888; letter-spacing: 1px;">Code de la partie</p>
+        <h2 id="display-code" style="color:#fd267d; font-size: 2.8em; margin: 5px 0;">----</h2>
         <div id="players-list"></div>
         <button id="btn-start" class="btn-pill btn-gradient" style="display:none;" onclick="startGame()">Lancer le Round</button>
       </div>
@@ -75,7 +75,7 @@
     <div id="screen-question" class="screen">
       <div class="card"><h3 id="question-text"></h3><input type="text" id="answer-input" placeholder="Ta réponse..."><button class="btn-pill btn-gradient" onclick="submitAnswer()">Valider</button></div>
     </div>
-    <div id="screen-waiting" class="screen"><div class="card"><h2>⏳👀 Suspens...</h2></div></div>
+    <div id="screen-waiting" class="screen"><div class="card"><h2>⏳👀 Suspens...</h2><p>Attends que tout le monde ait fini.</p></div></div>
     <div id="screen-host-resolution" class="screen"><div id="resolutions-container"></div><button class="btn-pill btn-gradient" onclick="showScores()">Voir les Scores</button></div>
     <div id="screen-scores" class="screen"><div class="card"><h2>Classement</h2><div id="scores-list"></div><button id="btn-next-round" class="btn-pill btn-gradient" style="display:none;" onclick="nextRound()">Round Suivant</button></div></div>
   </div>
@@ -87,17 +87,13 @@
     let myName = localStorage.getItem('playerName') || '';
     let isHost = false;
 
-    // Tentative de reconnexion automatique au démarrage
     socket.on('connect', () => {
-        if (myCode && myName) {
-            socket.emit('joinGame', { code: myCode, name: myName });
-        }
+        if (myCode && myName) socket.emit('joinGame', { code: myCode, name: myName });
     });
 
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
-      window.scrollTo(0,0);
     }
 
     function showScreenJoin() {
@@ -130,7 +126,7 @@
     }
 
     socket.on('joined', (data) => {
-      myCode = data.code;
+      myCode = data.gameCode; // Correction ici : data.gameCode au lieu de data
       isHost = data.isHost;
       if (isHost) {
           document.getElementById('btn-start').style.display = 'block';
@@ -149,27 +145,21 @@
     });
 
     function startGame() { socket.emit('startGame', myCode); }
-    
     socket.on('startRound', ({ targetName }) => {
       document.getElementById('target-name').innerText = targetName;
       document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
       showScreen('screen-category');
     });
-
     function selectCategory(category) { socket.emit('selectCategory', { code: myCode, category }); }
-
     socket.on('questionAssigned', (question) => {
       document.getElementById('question-text').innerText = question;
       showScreen('screen-question');
     });
-
     function submitAnswer() {
       const answer = document.getElementById('answer-input').value;
       if(answer) socket.emit('submitAnswer', { code: myCode, answer });
     }
-
     socket.on('waitingForOthers', () => showScreen('screen-waiting'));
-
     socket.on('allAnswersSubmitted', (answersData) => {
       if (isHost) {
         const container = document.getElementById('resolutions-container');
@@ -178,10 +168,10 @@
           const div = document.createElement('div');
           div.className = 'resolution-card';
           div.innerHTML = `
-            <h3>${data.name} cible ${data.targetName}</h3>
+            <h3>${data.name} ➔ ${data.targetName}</h3>
             <p class="res-question">${data.question}</p>
             <p class="res-answer">“ ${data.answer} ”</p>
-            <div class="action-buttons" style="gap:10px;">
+            <div style="display:flex; gap:5px; flex-wrap:wrap;">
               <button class="btn-judge busted" onclick="scorePlayer('${data.id}', 'busted', this)">❌ BUSTED</button>
               <button class="btn-judge false" onclick="scorePlayer('${data.id}', 'false', this)">❌ FALSE</button>
               <button class="btn-judge true" onclick="scorePlayer('${data.id}', 'true', this)">❤️ TRUE</button>
@@ -191,15 +181,12 @@
         showScreen('screen-host-resolution');
       }
     });
-
     function scorePlayer(playerId, action, btn) {
       socket.emit('scorePlayer', { code: myCode, playerId, action });
       btn.parentElement.style.opacity = '0.3';
       btn.parentElement.style.pointerEvents = 'none';
     }
-
     function showScores() { socket.emit('showScores', myCode); }
-
     socket.on('displayScores', (scores) => {
       const list = document.getElementById('scores-list');
       list.innerHTML = '';
@@ -208,14 +195,11 @@
       });
       showScreen('screen-scores');
     });
-
     function nextRound() { socket.emit('nextRound', myCode); }
-
     socket.on('backToLobby', () => {
       document.getElementById('answer-input').value = '';
       showScreen('screen-lobby');
     });
-
     socket.on('error', (msg) => alert(msg));
   </script>
 </body>
