@@ -24,7 +24,7 @@ const questions = {
     "Est-ce que Valentin chante bien ?",
     "C'est quoi la manie la plus drôle de Valentin ?",
     "Si Valentin devait participer à une émission de télé, ce serait laquelle ?",
-    "Qui est le plus sage des deux quand vous sortez ?",
+    "Quand vous sortez avec Valentin, Qui est le plus sage des deux quand vous sortez ?",
     "A ton avis Valentin il est plutot sucré ou salé ?",
     "Comment t’es venu ce soir ?",
     "Qu’est ce que t’as pris à manger ce soir ?",
