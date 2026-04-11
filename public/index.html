@@ -5,152 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Secrets & Révélations</title>
   <style>
-    /* CSS STYLE TINDER */
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1a1a1a; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-    
     .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); position: relative; }
     .header-title { font-size: 1.5em; font-weight: bold; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-    
     .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
     .screen { display: none; width: 100%; max-width: 380px; margin-top: 2vh; }
     .active { display: block; }
-    
     .card { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 30px 20px; text-align: center; margin-bottom: 30px; }
-    .card-title { font-size: 1.2em; color: #333; margin-top: 0; font-weight: 600; }
-    
     .profile-card { padding-top: 40px; padding-bottom: 40px; }
     .profile-card .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #FF9B9B 0%, #FFD1D1 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: bold; margin: 0 auto 20px; }
     .profile-card .target-name { font-size: 1.8em; font-weight: bold; color: #1a1a1a; margin: 0; }
-    
     input[type="text"] { padding: 18px; width: calc(100% - 36px); margin: 15px 0; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; background-color: #fff; text-align: center; outline: none; transition: border-color 0.2s; }
     input[type="text"]:focus { border-color: #fd267d; }
-    
     .btn-pill { padding: 18px 30px; margin: 15px 0; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; text-transform: uppercase; letter-spacing: 1px; width: 100%; box-shadow: 0 4px 10px rgba(253, 38, 125, 0.3); }
     .btn-gradient { background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); color: white; }
     .btn-gray { background: #fff; border: 2px solid #ddd; color: #555; box-shadow: none; }
-    
     .action-buttons { display: flex; justify-content: center; gap: 20px; margin-top: auto; padding: 20px 0; width: 100%; max-width: 380px; position: sticky; bottom: 0; background-color: #f0f2f5; }
     .btn-circle { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.15); background: #fff; outline: none; }
-    .btn-circle:active { transform: scale(0.9); }
-    
     .btn-circle.cat-verte { border: 2px solid #2ecc71; color: #2ecc71; }
-    .btn-circle.cat-verte:hover { background-color: #e8fcf0; }
     .btn-circle.cat-jaune { border: 2px solid #f1c40f; color: #f1c40f; }
-    .btn-circle.cat-jaune:hover { background-color: #fefbee; }
     .btn-circle.cat-rouge { border: 2px solid #e74c3c; color: #e74c3c; }
-    .btn-circle.cat-rouge:hover { background-color: #fdedec; }
-    
-    /* Boutons de jugement Tribunal */
-    .btn-judge { padding: 12px 15px; border-radius: 25px; border: 2px solid; font-weight: bold; cursor: pointer; background: #fff; font-size: 14px; transition: transform 0.1s; }
-    .btn-judge:active { transform: scale(0.95); }
+    .btn-judge { padding: 12px 15px; border-radius: 25px; border: 2px solid; font-weight: bold; cursor: pointer; background: #fff; font-size: 14px; }
     .btn-judge.busted { border-color: #9b59b6; color: #9b59b6; }
     .btn-judge.false { border-color: #e74c3c; color: #e74c3c; }
     .btn-judge.true { border-color: #2ecc71; color: #2ecc71; }
-    
-    .list-container { width: 100%; text-align: left; }
     .list-item { background: #fff; padding: 15px 20px; margin: 8px 0; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: space-between; }
     .item-rank { font-weight: bold; color: #fd267d; font-size: 1.2em; margin-right: 15px; }
-    
     .resolution-card { background: #fff; padding: 20px; margin: 20px 0; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: left; }
-    .resolution-card h3 { margin-top: 0; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .res-meta { color: #888; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
     .res-question { font-weight: 600; color: #333; margin: 10px 0; font-size: 1.1em; }
     .res-answer { color: #fd267d; font-size: 1.05em; margin-bottom: 20px; font-style: italic; }
   </style>
 </head>
 <body>
-
-  <div class="header">
-    <p class="header-title">MATCH & REVEAL</p>
-  </div>
-
+  <div class="header"><p class="header-title">MATCH & REVEAL</p></div>
   <div class="app-container">
-
     <div id="screen-home" class="screen active">
       <div class="card">
-        <h1>🤫</h1>
-        <h2>Parviendrez-vous à cacher vos secrets ?</h2>
+        <h1>🤫</h1><h2>Secrets & Révélations</h2>
         <input type="text" id="join-name" placeholder="Ton Prénom">
         <button class="btn-pill btn-gradient" onclick="createGame()">Créer une partie</button>
         <button class="btn-pill btn-gray" onclick="showScreenJoin()">Rejoindre</button>
       </div>
     </div>
-
     <div id="screen-join" class="screen">
       <div class="card">
         <h3>Entre le Code</h3>
-        <p>Tu trouveras le code sur le téléphone du Host.</p>
         <input type="text" id="join-code" placeholder="Code (4 lettres)" maxlength="4">
         <button class="btn-pill btn-gradient" onclick="joinGame()">Rejoindre la partie</button>
-        <button class="btn-pill btn-gray" onclick="showScreen('screen-home')">Retour</button>
       </div>
     </div>
-
     <div id="screen-lobby" class="screen">
       <div class="card">
-        <p class="res-meta">Code de la partie</p>
         <h2 id="display-code" style="color:#fd267d; font-size: 2.5em; margin: 5px 0;"></h2>
-        <div id="players-list" class="list-container"></div>
+        <div id="players-list"></div>
         <button id="btn-start" class="btn-pill btn-gradient" style="display:none;" onclick="startGame()">Lancer le Round</button>
-        <p id="wait-host-msg" style="color: #888;">En attente du lancement par le Host...</p>
       </div>
     </div>
-
     <div id="screen-category" class="screen">
       <div class="card profile-card">
         <div class="avatar" id="target-avatar">?</div>
-        <p class="res-meta">Cible tirée au sort</p>
         <p class="target-name" id="target-name"></p>
       </div>
-      <p style="text-align:center; color: #555;">Une question de quelle couleur ?</p>
       <div class="action-buttons">
-        <button class="btn-circle cat-verte" title="Verte (+1)" onclick="selectCategory('verte')">💚</button>
-        <button class="btn-circle cat-jaune" title="Jaune (+2)" onclick="selectCategory('jaune')">⭐</button>
-        <button class="btn-circle cat-rouge" title="Rouge (+3)" onclick="selectCategory('rouge')">🔥</button>
+        <button class="btn-circle cat-verte" onclick="selectCategory('verte')">💚</button>
+        <button class="btn-circle cat-jaune" onclick="selectCategory('jaune')">⭐</button>
+        <button class="btn-circle cat-rouge" onclick="selectCategory('rouge')">🔥</button>
       </div>
     </div>
-
     <div id="screen-question" class="screen">
-      <div class="card">
-        <p class="res-meta">À toi de jouer</p>
-        <h3 id="question-text" class="res-question"></h3>
-        <input type="text" id="answer-input" placeholder="Ta réponse sincère...">
-        <button class="btn-pill btn-gradient" onclick="submitAnswer()">Valider ma réponse</button>
-      </div>
+      <div class="card"><h3 id="question-text"></h3><input type="text" id="answer-input" placeholder="Ta réponse..."><button class="btn-pill btn-gradient" onclick="submitAnswer()">Valider</button></div>
     </div>
-
-    <div id="screen-waiting" class="screen">
-      <div class="card">
-        <h2>⏳👀</h2>
-        <h3>Suspens...</h3>
-        <p>Les autres joueurs sont en train de remplir leurs dossiers. Ne bouge pas.</p>
-      </div>
-    </div>
-
-    <div id="screen-host-resolution" class="screen">
-      <div class="card">
-        <h3>Le Tribunal</h3>
-        <p style="color: #555; margin-bottom: 0;">Appelle les couples et valide les points un par un.</p>
-      </div>
-      <div id="resolutions-container"></div>
-      <button class="btn-pill btn-gradient" style="margin-bottom: 40px;" onclick="showScores()">Voir les Scores</button>
-    </div>
-
-    <div id="screen-scores" class="screen">
-      <div class="card">
-        <h2>Classement</h2>
-        <div id="scores-list" class="list-container"></div>
-        <button id="btn-next-round" class="btn-pill btn-gradient" style="display:none;" onclick="nextRound()">Round Suivant</button>
-      </div>
-    </div>
-
+    <div id="screen-waiting" class="screen"><div class="card"><h2>⏳👀 Suspens...</h2></div></div>
+    <div id="screen-host-resolution" class="screen"><div id="resolutions-container"></div><button class="btn-pill btn-gradient" onclick="showScores()">Voir les Scores</button></div>
+    <div id="screen-scores" class="screen"><div class="card"><h2>Classement</h2><div id="scores-list"></div><button id="btn-next-round" class="btn-pill btn-gradient" style="display:none;" onclick="nextRound()">Round Suivant</button></div></div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
-    let myCode = '';
+    let myCode = localStorage.getItem('gameCode') || '';
+    let myName = localStorage.getItem('playerName') || '';
     let isHost = false;
+
+    // Tentative de reconnexion automatique au démarrage
+    socket.on('connect', () => {
+        if (myCode && myName) {
+            socket.emit('joinGame', { code: myCode, name: myName });
+        }
+    });
 
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -159,38 +101,43 @@
     }
 
     function showScreenJoin() {
-      if(!document.getElementById('join-name').value) return alert("Saisis ton prénom d'abord !");
+      myName = document.getElementById('join-name').value;
+      if(!myName) return alert("Saisis ton prénom !");
+      localStorage.setItem('playerName', myName);
       showScreen('screen-join');
     }
 
-    // ACCUEIL
     function createGame() {
-      const name = document.getElementById('join-name').value;
-      if (!name) return alert("Saisis ton prénom !");
+      myName = document.getElementById('join-name').value;
+      if (!myName) return alert("Saisis ton prénom !");
+      localStorage.setItem('playerName', myName);
       socket.emit('createGame');
-      // Pour le host, on simule qu'il 'rejoint' sa propre partie pour avoir son nom
-      socket.once('gameCreated', (code) => {
-        myCode = code;
-        socket.emit('joinGame', { code, name });
-        isHost = true;
-        document.getElementById('display-code').innerText = code;
-        document.getElementById('btn-start').style.display = 'block';
-        document.getElementById('wait-host-msg').style.display = 'none';
-        document.getElementById('btn-next-round').style.display = 'block';
-        showScreen('screen-lobby');
-      });
     }
+
+    socket.on('gameCreated', (code) => {
+      myCode = code;
+      localStorage.setItem('gameCode', code);
+      socket.emit('joinGame', { code, name: myName });
+    });
 
     function joinGame() {
-      const code = document.getElementById('join-code').value.toUpperCase();
-      const name = document.getElementById('join-name').value;
-      if (code.length === 4 && name) socket.emit('joinGame', { code, name });
+      myCode = document.getElementById('join-code').value.toUpperCase();
+      myName = localStorage.getItem('playerName');
+      if (myCode && myName) {
+          localStorage.setItem('gameCode', myCode);
+          socket.emit('joinGame', { code: myCode, name: myName });
+      }
     }
 
-    socket.on('joined', (code) => {
-      myCode = code;
-      document.getElementById('display-code').innerText = code;
-      showScreen('screen-lobby');
+    socket.on('joined', (data) => {
+      myCode = data.code;
+      isHost = data.isHost;
+      if (isHost) {
+          document.getElementById('btn-start').style.display = 'block';
+          document.getElementById('btn-next-round').style.display = 'block';
+      }
+      document.getElementById('display-code').innerText = myCode;
+      if (data.status === 'lobby') showScreen('screen-lobby');
     });
 
     socket.on('updatePlayers', (players) => {
@@ -201,7 +148,6 @@
       });
     });
 
-    // JEU
     function startGame() { socket.emit('startGame', myCode); }
     
     socket.on('startRound', ({ targetName }) => {
@@ -224,27 +170,22 @@
 
     socket.on('waitingForOthers', () => showScreen('screen-waiting'));
 
-    // RESOLUTION (HOST SEULEMENT)
     socket.on('allAnswersSubmitted', (answersData) => {
       if (isHost) {
         const container = document.getElementById('resolutions-container');
         container.innerHTML = '';
         answersData.forEach(data => {
           const div = document.createElement('div');
-          div.className = 'resolution-card card';
-          div.id = `res-${data.id}`;
+          div.className = 'resolution-card';
           div.innerHTML = `
             <h3>${data.name} cible ${data.targetName}</h3>
-            <p class="res-meta">${data.category} | ${data.id === socket.id ? '(Toi)' : ''}</p>
             <p class="res-question">${data.question}</p>
             <p class="res-answer">“ ${data.answer} ”</p>
-            <p style="text-align: center; color: #555;">Verdict ?</p>
-            <div class="action-buttons" style="position:relative; max-width: 100%; box-shadow:none; padding: 0; gap: 10px; flex-wrap: wrap;">
+            <div class="action-buttons" style="gap:10px;">
               <button class="btn-judge busted" onclick="scorePlayer('${data.id}', 'busted', this)">❌ BUSTED</button>
               <button class="btn-judge false" onclick="scorePlayer('${data.id}', 'false', this)">❌ FALSE</button>
               <button class="btn-judge true" onclick="scorePlayer('${data.id}', 'true', this)">❤️ TRUE</button>
-            </div>
-          `;
+            </div>`;
           container.appendChild(div);
         });
         showScreen('screen-host-resolution');
@@ -253,22 +194,17 @@
 
     function scorePlayer(playerId, action, btn) {
       socket.emit('scorePlayer', { code: myCode, playerId, action });
-      btn.parentElement.parentElement.style.opacity = '0.3';
-      btn.parentElement.parentElement.style.pointerEvents = 'none';
+      btn.parentElement.style.opacity = '0.3';
+      btn.parentElement.style.pointerEvents = 'none';
     }
 
     function showScores() { socket.emit('showScores', myCode); }
 
-    // SCORES
     socket.on('displayScores', (scores) => {
       const list = document.getElementById('scores-list');
       list.innerHTML = '';
       scores.forEach((s, idx) => {
-        list.innerHTML += `
-          <div class="list-item">
-            <span><span class="item-rank">#${idx + 1}</span> ${s.name}</span>
-            <span style="font-weight: bold;">${s.score} pts</span>
-          </div>`;
+        list.innerHTML += `<div class="list-item"><span>#${idx + 1} ${s.name}</span><strong>${s.score} pts</strong></div>`;
       });
       showScreen('screen-scores');
     });
