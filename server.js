@@ -78,7 +78,7 @@ const questions = {
     "Quel est ton plus gros défaut (celui qui agace tout le monde) ? / What is your biggest flaw (the one that annoys everyone)?",
     "Quel est ton motto in life (ta devise) ? / What is your motto in life?",
     "Quel est ton pire souvenir d'école (la honte totale) ? / What is your worst school memory (total embarrassment)?",
-    "Quelle est la croyance absurde que tu as gardée le plus longtemps ? / What is the most absurd belief you held onto the longest?",
+    "Quelle est ta croyance absurde que tu as gardée le plus longtemps ? / What is the most absurd belief you held onto the longest?",
     "Quel est le pire cadeau qu'on t'ait jamais offert ? / What is the worst gift you have ever been given?",
     "Si tu étais un Président, quelle est la première loi que mettrais-tu en place ? / If you were President, what would be the first law you would implement?",
     "Quelle est la pire application sur ton téléphone (celle que tu devrais supprimer) ? / What is the worst app on your phone (the one you should delete)?",
@@ -133,13 +133,48 @@ io.on('connection', (socket) => {
 
   socket.on('joinGame', ({ code, name }) => {
     code = code.toUpperCase();
-    if (games[code] && games[code].status === 'lobby') {
+    if (games[code]) {
+      // Reconnexion : On vérifie si un joueur avec ce nom existe déjà
+      let existingPlayerId = Object.keys(games[code].players).find(id => games[code].players[id].name === name);
+      
+      if (existingPlayerId) {
+          // On met à jour l'ID du socket pour ce joueur
+          const playerData = games[code].players[existingPlayerId];
+          delete games[code].players[existingPlayerId];
+          games[code].players[socket.id] = playerData;
+          games[code].players[socket.id].id = socket.id;
+          
+          // Si on est le host, on met à jour l'ID du host
+          if (existingPlayerId === games[code].host) {
+              games[code].host = socket.id;
+          }
+      } else {
+          // Nouveau joueur
+          if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
+          games[code].players[socket.id] = { name, score: 0, status: 'waiting', id: socket.id };
+      }
+
       socket.join(code);
-      games[code].players[socket.id] = { name, score: 0, status: 'waiting', id: socket.id };
       io.to(code).emit('updatePlayers', Object.values(games[code].players));
-      socket.emit('joined', code);
+      socket.emit('joined', { code, status: games[code].status, isHost: (socket.id === games[code].host) });
+      
+      // Si la partie est en cours, on renvoie les infos nécessaires au joueur qui revient
+      if (games[code].status === 'playing') {
+          const p = games[code].players[socket.id];
+          socket.emit('startRound', { targetName: games[code].players[p.targetId].name });
+          if (p.question) socket.emit('questionAssigned', p.question);
+          if (p.status === 'done') socket.emit('waitingForOthers');
+      }
+      
+      if (games[code].status === 'resolution' && socket.id === games[code].host) {
+          // Si le host revient pendant le tribunal
+          socket.emit('allAnswersSubmitted', Object.values(games[code].players).map(p => ({
+            id: p.id, name: p.name, targetName: games[code].players[p.targetId].name,
+            category: p.category, question: p.question, answer: p.answer
+          })));
+      }
     } else {
-      socket.emit('error', 'Partie introuvable ou déjà lancée.');
+      socket.emit('error', 'Partie introuvable.');
     }
   });
 
@@ -156,7 +191,6 @@ io.on('connection', (socket) => {
         delete game.players[id].question;
         delete game.players[id].answer;
         delete game.players[id].category;
-        
         io.to(id).emit('startRound', { targetName: game.players[targets[index]].name });
       });
     }
@@ -185,12 +219,8 @@ io.on('connection', (socket) => {
       if (allDone) {
         game.status = 'resolution';
         io.to(game.host).emit('allAnswersSubmitted', Object.values(game.players).map(p => ({
-          id: p.id,
-          name: p.name,
-          targetName: game.players[p.targetId].name,
-          category: p.category,
-          question: p.question,
-          answer: p.answer
+          id: p.id, name: p.name, targetName: game.players[p.targetId].name,
+          category: p.category, question: p.question, answer: p.answer
         })));
       }
     }
@@ -206,7 +236,6 @@ io.on('connection', (socket) => {
         if (player.category === 'jaune') player.score += 2;
         if (player.category === 'rouge') player.score += 3;
       }
-      // if false, score += 0
     }
   });
 
@@ -223,13 +252,13 @@ io.on('connection', (socket) => {
       const game = games[code];
       if (game && game.host === socket.id) {
           game.round += 1;
+          game.status = 'lobby';
           io.to(code).emit('backToLobby');
       }
   });
 });
 
 const PORT = process.env.PORT || 3000;
-
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Serveur lancé sur le port ${PORT}`);
 });
