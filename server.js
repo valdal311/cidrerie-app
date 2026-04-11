@@ -4,10 +4,7 @@ const { Server } = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-
-const io = new Server(server, {
-  connectionStateRecovery: {}
-});
+const io = new Server(server);
 
 app.use(express.static('public'));
 
@@ -18,85 +15,84 @@ const questions = {
     "Si Valentin devait être un Animal ça serait quoi ? / If Valentin were an animal, what would he be?",
     "Est-ce que Valentin est plus fort que toi au surf ? / Is Valentin better at surfing than you?",
     "Est-ce que Valentin cuisine mieux qu'il ne surfe ? / Does Valentin cook better than he surfs?",
-    "C’est quoi le premier truc que Valentin t’a appris (ou essayé de t’apprendre) ? / What is the first thing Valentin taught you (or tried to teach you)?",
-    "Quel est le surnom le plus ridicule que tu donnes à Valentin ? / What is the most ridiculous nickname you give Valentin?",
-    "Est-ce que Valentin est du genre à arriver en avance ou toujours 10 min après ? / Is Valentin the type to arrive early or always 10 minutes late?",
-    "Si Valentin gagnait au loto, il achèterait quoi en premier selon toi ? / If Valentin won the lottery, what do you think he would buy first?",
-    "Quel est l'émoji que Valentin utilise le plus ? / What emoji does Valentin use the most?",
+    "C’est quoi le premier truc que Valentin t’a appris ? / What is the first thing Valentin taught you?",
+    "Quel est le surnom le plus ridicule de Valentin ? / What is Valentin's most ridiculous nickname?",
+    "Est-ce que Valentin est plutôt avance ou retard ? / Is Valentin early or late?",
+    "S'il gagnait au loto, il achèterait quoi ? / If he won the lottery, what would he buy?",
+    "Quel émoji Valentin utilise le plus ? / Which emoji does Valentin use most?",
     "Est-ce que Valentin chante bien ? / Does Valentin sing well?",
-    "C'est quoi la manie la plus drôle de Valentin ? / What is Valentin's funniest habit?",
-    "Si Valentin devait participer à une émission de télé, ce serait laquelle ? / If Valentin were to participate in a TV show, which one would it be?",
-    "Qui est le plus sage des deux quand vous sortez ? / Who is the best behaved of the two of you when you go out?",
-    "A ton avis Valentin il est plutot sucré ou salé ? / In your opinion, does Valentin prefer sweet or savory?",
+    "C'est quoi la manie la plus drôle de Valentin ? / What's Valentin's funniest habit?",
+    "Valentin dans une émission TV : laquelle ? / Valentin in a TV show: which one?",
+    "Qui est le plus sage en soirée ? / Who is the best behaved when going out?",
+    "Valentin : plutôt sucré ou salé ? / Valentin: sweet or savory?",
     "Comment t’es venu ce soir ? / How did you get here tonight?",
-    "Qu’est ce que t’as pris à manger ce soir ? / What did you have to eat tonight?",
+    "Qu’est ce que t’as pris à manger ? / What did you have to eat?",
     "Qu’est-ce que tu fais ce weekend ? / What are you doing this weekend?",
-    "C’est quoi ton programme pour demain matin ? / What are your plans for tomorrow morning?",
-    "T’es plutôt montagne ou océan ? / Are you more of a mountain or ocean person?",
-    "Tu es plutôt 'Team Chien' ou 'Team Chat' ? / Are you 'Team Dog' or 'Team Cat'?",
-    "C’est quoi ton prochain lieu de vacances ? / What is your next vacation destination?",
-    "Quelle est ta destination de rêve absolue ? / What is your absolute dream destination?",
-    "Quelle est la série que tu as 'binge-watchée' le plus vite ? / What series did you binge-watch the fastest?",
-    "C'est quoi la dernière série que t'as terminée ? / What is the last series you finished?",
-    "Quel est ton endroit préféré pour boire un verre dans le coin ? / What is your favorite place to grab a drink around here?",
-    "Tu préfères que chacun prenne son plat ou partager genre tapas ? / Do you prefer everyone having their own dish or sharing tapas-style?",
+    "T’es plutôt montagne ou océan ? / More of a mountain or ocean person?",
+    "Team Chien ou Team Chat ? / Team Dog or Team Cat?",
+    "C’est quoi ton prochain lieu de vacances ? / Where's your next vacation?",
+    "Ta destination de rêve ? / Your dream destination?",
+    "Série binge-watchée le plus vite ? / Series you binged the fastest?",
+    "Dernière série terminée ? / Last series you finished?",
+    "Ton endroit préféré pour boire un verre ? / Favorite place for a drink?",
+    "Plat individuel ou partage genre tapas ? / Individual dish or sharing tapas?",
     "T’aimes bien les grandes tablées ? / Do you like big dinner parties?",
-    "Tu la prends comment ta viande ? / How do you like your meat cooked?",
-    "Quel est ton film préféré que tu peux voir 100 fois ? / What is your favorite movie that you could watch 100 times?",
-    "Quel est le dernier livre qui t'a vraiment marqué ? / What is the last book that really left a mark on you?",
-    "Quel est l'aliment que tu détestes le plus au monde ? / What food do you hate the most in the world?",
-    "Quel est ton humoriste préféré ? / Who is your favorite comedian?",
-    "C’est quand la dernière fois que t’as déjà été à une cidrerie ? / When was the last time you went to a cider house?",
-    "Quel est le sport dans lequel tu excelles le plus ? / What sport do you excel at the most?",
-    "C’est quoi le meilleur truc que t’aies mangé dans une cidrerie ? / What's the best thing you've eaten in a cider house?"
+    "Cuisson de ta viande ? / How do you like your meat?",
+    "Film préféré à voir 100 fois ? / Movie you'd watch 100 times?",
+    "Dernier livre marquant ? / Last book that marked you?",
+    "Aliment détesté au monde ? / Food you hate most in the world?",
+    "Ton humoriste préféré ? / Your favorite comedian?",
+    "Dernière fois en cidrerie ? / Last time in a cider house?",
+    "Ton sport de prédilection ? / Your best sport?",
+    "Meilleur truc mangé en cidrerie ? / Best thing eaten in a cider house?"
   ],
   jaune: [
-    "Si tu gagnais au loto demain, quelle est la première chose que tu achèterais ? / If you won the lottery tomorrow, what is the first thing you would buy?",
-    "Si tu pouvais avoir un super-pouvoir, lequel choisirais-tu ? / If you could have a superpower, which one would you choose?",
-    "Si tu pouvais dîner avec une personnalité (morte ou vive), qui serait-ce ? / If you could have dinner with any famous person (dead or alive), who would it be?",
-    "Quel objet emporterais-tu sur une île déserte (un seul !) ? / What one item would you take to a desert island?",
-    "Quel métier rêvais-tu de faire quand tu étais petit ? / What job did you dream of having when you were little?",
-    "Quelle est ta Madeleine de Proust (une odeur, un goût qui te ramène en enfance) ? / What is your Proust Madeleine (a smell, a taste that takes you back to childhood)?",
-    "Quel était ton dessin animé préféré que tu regardais en boucle ? / What was your favorite cartoon that you watched on repeat?",
-    "Quelle est ta chanson 'plaisir coupable' (que tu écoutes en cachette) ? / What is your 'guilty pleasure' song (that you listen to in secret)?",
-    "Quel est ton talent inutile (ex: faire le trèfle avec sa langue) ? / What is your useless talent (e.g. rolling your tongue)?",
-    "Que ferais-tu si tu étais invisible pendant 24 heures ? / What would you do if you were invisible for 24 hours?",
-    "Si tu devais changer de prénom, lequel choisirais-tu ? / If you had to change your name, which one would you choose?",
-    "Qu'est-ce qui te fait immédiatement rire à tous les coups ? / What never fails to make you laugh immediately?",
-    "Quelle est la première chose que tu regardes chez quelqu'un ? / What is the first thing you notice about someone?",
-    "Si tu devais ouvrir un restaurant, ça serait quoi le concept ? / If you were to open a restaurant, what would the concept be?",
-    "C'est quoi ta plus grande passion, celle qui te fait oublier de manger ? / What is your greatest passion, the one that makes you forget to eat?",
-    "Quelle est ta plus grande qualité (celle que tes amis citent toujours) ? / What is your best quality (the one your friends always mention)?",
-    "Quel est le meilleur conseil qu'on t'ait jamais donné ? / What is the best advice you've ever been given?",
-    "Quel est l'objet le plus bizarre que tu possèdes chez toi ? / What is the weirdest object you own at home?",
-    "Quel était ton adresse msn ou ton pseudo skyblog ? / What was your MSN address or Skyblog username?",
-    "T’as déjà été confondu avec quelqu’un d’autre ? / Have you ever been mistaken for someone else?",
-    "Si tu étais une star, tu serais qui ? / If you were a celebrity, who would you be?"
+    "Premier achat si tu gagnes au loto ? / First thing you buy if you win the lottery?",
+    "Ton super-pouvoir de rêve ? / Your dream superpower?",
+    "Dîner avec une star (morte ou vive) ? / Dinner with a star (dead or alive)?",
+    "Un seul objet sur une île déserte ? / One object on a desert island?",
+    "Ton métier de rêve enfant ? / Dream job as a kid?",
+    "Ta Madeleine de Proust (odeur/goût) ? / Your Proust's Madeleine (smell/taste)?",
+    "Dessin animé préféré d'enfance ? / Favorite childhood cartoon?",
+    "Ta chanson plaisir coupable ? / Your guilty pleasure song?",
+    "Ton talent inutile ? / Your useless talent?",
+    "Invisible pendant 24h : tu fais quoi ? / Invisible for 24h: what do you do?",
+    "Nouveau prénom choisi ? / If you had to choose a new name?",
+    "Ce qui te fait rire à tous les coups ? / What always makes you laugh?",
+    "Premier truc regardé chez quelqu'un ? / First thing you notice in someone?",
+    "Ton concept de restaurant ? / Your restaurant concept?",
+    "Ta passion qui fait oublier de manger ? / Passion that makes you forget to eat?",
+    "Ta plus grande qualité ? / Your greatest quality?",
+    "Meilleur conseil reçu ? / Best advice ever received?",
+    "Objet le plus bizarre chez toi ? / Weirdest object at your home?",
+    "Ton vieux pseudo MSN/Skyblog ? / Your old MSN/Skyblog username?",
+    "Déjà confondu avec quelqu'un ? / Ever been mistaken for someone else?",
+    "Si tu étais une star, qui serais-tu ? / If you were a star, who would you be?"
   ],
   rouge: [
-    "Quelle est ta plus grande peur irrationnelle ? / What is your biggest irrational fear?",
-    "Quels sont tes 3 ingrédients du bonheur ? / What are your 3 ingredients for happiness?",
-    "Quelle est la chose dont tu n'es pas le plus fier ? / What is the thing you are least proud of?",
-    "Qui est la personne que tu appellerais en premier en cas de gros problème ? / Who is the first person you would call in case of a major problem?",
-    "Quel est ton plus gros défaut (celui qui agace tout le monde) ? / What is your biggest flaw (the one that annoys everyone)?",
-    "Quel est ton motto in life (ta devise) ? / What is your motto in life?",
-    "Quel est ton pire souvenir d'école (la honte totale) ? / What is your worst school memory (total embarrassment)?",
-    "Quelle est ta croyance absurde que tu as gardée le plus longtemps ? / What is the most absurd belief you held onto the longest?",
-    "Quel est le pire cadeau qu'on t'ait jamais offert ? / What is the worst gift you have ever been given?",
-    "Si tu étais un Président, quelle est la première loi que mettrais-tu en place ? / If you were President, what would be the first law you would implement?",
-    "Quelle est la pire application sur ton téléphone (celle que tu devrais supprimer) ? / What is the worst app on your phone (the one you should delete)?",
-    "Quel est le mensonge le plus culotté que tu aies jamais dit ? / What is the boldest lie you have ever told?",
-    "Quelle est la pire gaffe que tu aies faite en public ? / What is the worst blunder you have made in public?",
-    "Quelle est la pire blessure que tu t’aies faites ? / What is the worst injury you've ever had?",
-    "Quelle est la chose la plus courageuse que tu aies faite ? / What is the bravest thing you have ever done?",
-    "Quelle est ta plus grande réussite personnelle ? / What is your greatest personal achievement?",
-    "Si tu devais décrire ta vie en un titre de film, ce serait lequel ? / If you had to describe your life with a movie title, what would it be?",
-    "Si tu devais décrire ta vie en une musique ça serait laquelle ? / If you had to describe your life with a song, what would it be?",
-    "Quelle est la pire expérience culinaire que t'as eue ? / What is the worst culinary experience you've ever had?",
-    "Quelle est la chose que tu veux faire à tout prix avant de mourir ? / What is the one thing you want to do at all costs before you die?",
-    "Quel est l'aliment que tu ne pourrais jamais partager ? / What food could you never share?",
-    "T'es plutôt du genre à finir les assiettes des autres ? / Are you the type to finish other people's plates?",
-    "T’as un ou une partenaire elle veut piquer dans ton plat tu partages ? / If your partner wants to steal from your plate, do you share?"
+    "Ta plus grande peur irrationnelle ? / Your biggest irrational fear?",
+    "Tes 3 ingrédients du bonheur ? / Your 3 ingredients for happiness?",
+    "Chose dont tu es le moins fier ? / Thing you're least proud of?",
+    "Qui appeler en cas de gros pépin ? / Who to call in a major crisis?",
+    "Ton plus gros défaut ? / Your biggest flaw?",
+    "Ta devise dans la vie ? / Your motto in life?",
+    "Pire souvenir d'école ? / Worst school memory?",
+    "Croyance absurde gardée longtemps ? / Absurd belief held for a long time?",
+    "Pire cadeau reçu ? / Worst gift received?",
+    "Ta première loi si tu es Président ? / Your first law as President?",
+    "Pire application sur ton tel ? / Worst app on your phone?",
+    "Ton mensonge le plus culotté ? / Your boldest lie?",
+    "Pire gaffe en public ? / Worst public blunder?",
+    "Pire blessure physique ? / Worst physical injury?",
+    "Chose la plus courageuse faite ? / Bravest thing you've done?",
+    "Ta plus grande réussite ? / Your greatest achievement?",
+    "Titre de film pour ta vie ? / Movie title for your life?",
+    "Musique pour ta vie ? / Song for your life?",
+    "Pire expérience culinaire ? / Worst culinary experience?",
+    "À faire avant de mourir ? / To do before you die?",
+    "Aliment impossible à partager ? / Food impossible to share?",
+    "Finir l'assiette des autres ? / Do you finish others' plates?",
+    "Partage du plat avec ton/ta partenaire ? / Do you share food with your partner?"
   ]
 };
 
@@ -107,403 +103,187 @@ function generateCode() {
 }
 
 function assignTargets(playerIds) {
-  if (playerIds.length < 2) return playerIds;
-
   let targets = [...playerIds];
-
   for (let i = targets.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [targets[i], targets[j]] = [targets[j], targets[i]];
   }
-
   for (let i = 0; i < playerIds.length; i++) {
     if (playerIds[i] === targets[i]) {
-      const swapIdx = (i + 1) % playerIds.length;
+      let swapIdx = (i + 1) % playerIds.length;
       [targets[i], targets[swapIdx]] = [targets[swapIdx], targets[i]];
     }
   }
-
   return targets;
 }
 
-function getGameBySocketId(socketId) {
-  for (const code of Object.keys(games)) {
-    const game = games[code];
-    const player = Object.values(game.players).find(p => p.socketId === socketId);
-    if (player) {
-      return { code, game, player };
-    }
-  }
-  return null;
-}
-
-function getPublicPlayers(game) {
-  return Object.values(game.players).map(p => ({
-    playerId: p.playerId,
-    name: p.name,
-    connected: p.connected,
-    score: p.score
-  }));
-}
-
-function getScores(game) {
-  return Object.values(game.players)
-    .map(p => ({ name: p.name, score: p.score }))
-    .sort((a, b) => b.score - a.score);
-}
-
-function emitPlayersUpdate(code) {
-  const game = games[code];
-  if (!game) return;
-  io.to(code).emit('updatePlayers', getPublicPlayers(game));
-}
-
-function restorePlayerState(socket, code, game, player) {
-  if (game.status === 'lobby') {
-    socket.emit('goToLobby', { code });
-    return;
-  }
-
-  if (game.status === 'playing') {
-    const target = game.players[player.targetPlayerId];
-
-    if (player.status === 'choosing_category') {
-      socket.emit('startRound', { targetName: target?.name || '?' });
-      return;
-    }
-
-    if (player.status === 'answering') {
-      socket.emit('startRound', { targetName: target?.name || '?' });
-      if (player.question) {
-        socket.emit('questionAssigned', player.question);
-      }
-      return;
-    }
-
-    if (player.status === 'done') {
-      socket.emit('waitingForOthers');
-      return;
-    }
-  }
-
-  if (game.status === 'resolution') {
-    if (player.playerId === game.hostPlayerId) {
-      socket.emit(
-        'allAnswersSubmitted',
-        Object.values(game.players).map(p => ({
-          playerId: p.playerId,
-          name: p.name,
-          targetName: game.players[p.targetPlayerId]?.name || '?',
-          category: p.category,
-          question: p.question,
-          answer: p.answer
-        }))
-      );
-    } else {
-      socket.emit('waitingForJudgement');
-    }
-    return;
-  }
-
-  if (game.status === 'scores') {
-    socket.emit('displayScores', getScores(game));
-  }
-}
-
 io.on('connection', (socket) => {
-  socket.on('createGame', ({ name, playerId }) => {
-    if (!name || !playerId) {
-      return socket.emit('errorMessage', 'Nom ou identifiant joueur manquant.');
-    }
-
-    let code = generateCode();
-    while (games[code]) {
-      code = generateCode();
-    }
-
+  socket.on('createGame', () => {
+    const code = generateCode();
     games[code] = {
-      hostPlayerId: playerId,
+      host: socket.id,
+      currentHostSocketId: socket.id,
+      players: {},
       status: 'lobby',
-      round: 1,
-      players: {}
+      round: 1
     };
-
-    games[code].players[playerId] = {
-      playerId,
-      socketId: socket.id,
-      name,
-      connected: true,
-      score: 0,
-      status: 'waiting',
-      targetPlayerId: null,
-      category: null,
-      question: null,
-      answer: null
-    };
-
     socket.join(code);
     socket.emit('gameCreated', code);
-    socket.emit('joined', {
-      code,
-      status: 'lobby',
-      isHost: true
-    });
-
-    emitPlayersUpdate(code);
   });
 
-  socket.on('joinGame', ({ code, name, playerId }) => {
-    code = (code || '').toUpperCase();
-    const game = games[code];
+  socket.on('joinGame', ({ code, name }) => {
+    code = code.toUpperCase();
+    if (games[code]) {
+      // Recherche si le joueur était déjà là avec son Prénom
+      let existingPlayerId = Object.keys(games[code].players).find(id => games[code].players[id].name === name);
+      
+      if (existingPlayerId) {
+          // Mise à jour de sa connexion UNIQUEMENT (on garde son ancienne identité)
+          games[code].players[existingPlayerId].currentSocketId = socket.id;
+          if (games[code].host === existingPlayerId) {
+              games[code].currentHostSocketId = socket.id;
+          }
+      } else {
+          // Nouveau Joueur
+          if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
+          games[code].players[socket.id] = { 
+              id: socket.id, 
+              currentSocketId: socket.id, 
+              name, 
+              score: 0, 
+              status: 'waiting' 
+          };
+          if (games[code].host === socket.id) {
+              games[code].currentHostSocketId = socket.id;
+          }
+      }
 
-    if (!game) {
-      return socket.emit('errorMessage', 'Partie introuvable.');
-    }
+      const player = games[code].players[existingPlayerId || socket.id];
+      const isHost = (games[code].currentHostSocketId === socket.id);
 
-    if (!name || !playerId) {
-      return socket.emit('errorMessage', 'Nom ou identifiant joueur manquant.');
-    }
-
-    let player = game.players[playerId];
-
-    if (player) {
-      player.socketId = socket.id;
-      player.connected = true;
-      player.name = name;
+      socket.join(code);
+      io.to(code).emit('updatePlayers', Object.values(games[code].players));
+      
+      socket.emit('joined', { gameCode: code, status: games[code].status, isHost });
+      
+      // Rattrapage de l'écran en cours si reconnexion
+      if (games[code].status === 'playing') {
+          socket.emit('startRound', { targetName: games[code].players[player.targetId].name });
+          if (player.question) socket.emit('questionAssigned', player.question);
+          if (player.status === 'done') socket.emit('waitingForOthers');
+      } else if (games[code].status === 'resolution') {
+          if (isHost) {
+              socket.emit('allAnswersSubmitted', Object.values(games[code].players).map(p => ({
+                id: p.id, name: p.name, targetName: games[code].players[p.targetId].name,
+                category: p.category, question: p.question, answer: p.answer
+              })));
+          } else {
+              socket.emit('waitingForOthers');
+          }
+      } else if (games[code].status === 'scores') {
+          const scores = Object.values(games[code].players).map(p => ({ name: p.name, score: p.score })).sort((a, b) => b.score - a.score);
+          socket.emit('displayScores', scores);
+      }
     } else {
-      if (game.status !== 'lobby') {
-        return socket.emit('errorMessage', 'Partie déjà commencée.');
-      }
-
-      const nameAlreadyUsed = Object.values(game.players).some(
-        p => p.name.trim().toLowerCase() === name.trim().toLowerCase()
-      );
-
-      if (nameAlreadyUsed) {
-        return socket.emit('errorMessage', 'Ce prénom est déjà utilisé.');
-      }
-
-      player = game.players[playerId] = {
-        playerId,
-        socketId: socket.id,
-        name,
-        connected: true,
-        score: 0,
-        status: 'waiting',
-        targetPlayerId: null,
-        category: null,
-        question: null,
-        answer: null
-      };
+      socket.emit('error', 'Partie introuvable.');
     }
-
-    socket.join(code);
-
-    socket.emit('joined', {
-      code,
-      status: game.status,
-      isHost: game.hostPlayerId === playerId
-    });
-
-    emitPlayersUpdate(code);
-    restorePlayerState(socket, code, game, player);
   });
 
   socket.on('startGame', (code) => {
-    code = (code || '').toUpperCase();
     const game = games[code];
-
-    if (!game) return;
-
-    const current = getGameBySocketId(socket.id);
-    if (!current || current.code !== code) return;
-    if (current.player.playerId !== game.hostPlayerId) return;
-
-    const playerIds = Object.keys(game.players);
-    if (playerIds.length < 2) {
-      return socket.emit('errorMessage', 'Il faut au moins 2 joueurs.');
-    }
-
-    game.status = 'playing';
-    const targets = assignTargets(playerIds);
-
-    playerIds.forEach((playerId, index) => {
-      const p = game.players[playerId];
-      p.targetPlayerId = targets[index];
-      p.status = 'choosing_category';
-      p.category = null;
-      p.question = null;
-      p.answer = null;
-
-      if (p.connected && p.socketId) {
-        io.to(p.socketId).emit('startRound', {
-          targetName: game.players[targets[index]].name
-        });
-      }
-    });
-  });
-
-  socket.on('selectCategory', ({ code, category }) => {
-    code = (code || '').toUpperCase();
-    const game = games[code];
-    if (!game) return;
-
-    const current = getGameBySocketId(socket.id);
-    if (!current || current.code !== code) return;
-
-    const player = current.player;
-
-    if (game.status !== 'playing') return;
-    if (!['verte', 'jaune', 'rouge'].includes(category)) return;
-
-    const qList = questions[category];
-    const randomQ = qList[Math.floor(Math.random() * qList.length)];
-
-    player.category = category;
-    player.question = randomQ;
-    player.status = 'answering';
-
-    socket.emit('questionAssigned', randomQ);
-  });
-
-  socket.on('submitAnswer', ({ code, answer }) => {
-    code = (code || '').toUpperCase();
-    const game = games[code];
-    if (!game) return;
-
-    const current = getGameBySocketId(socket.id);
-    if (!current || current.code !== code) return;
-
-    const player = current.player;
-    const cleanAnswer = (answer || '').trim();
-
-    if (!cleanAnswer) {
-      return socket.emit('errorMessage', 'Ta réponse est vide.');
-    }
-
-    player.answer = cleanAnswer;
-    player.status = 'done';
-
-    socket.emit('waitingForOthers');
-
-    const allDone = Object.values(game.players).every(p => p.status === 'done');
-
-    if (allDone) {
-      game.status = 'resolution';
-
-      const host = game.players[game.hostPlayerId];
-      if (host?.connected && host.socketId) {
-        io.to(host.socketId).emit(
-          'allAnswersSubmitted',
-          Object.values(game.players).map(p => ({
-            playerId: p.playerId,
-            name: p.name,
-            targetName: game.players[p.targetPlayerId]?.name || '?',
-            category: p.category,
-            question: p.question,
-            answer: p.answer
-          }))
-        );
-      }
-
-      Object.values(game.players).forEach(p => {
-        if (p.playerId !== game.hostPlayerId && p.connected && p.socketId) {
-          io.to(p.socketId).emit('waitingForJudgement');
-        }
+    if (game && game.currentHostSocketId === socket.id) {
+      game.status = 'playing';
+      const playerIds = Object.keys(game.players);
+      const targets = assignTargets(playerIds);
+      
+      playerIds.forEach((id, index) => {
+        game.players[id].targetId = targets[index];
+        game.players[id].status = 'choosing_category';
+        delete game.players[id].question;
+        delete game.players[id].answer;
+        delete game.players[id].category;
+        
+        io.to(game.players[id].currentSocketId).emit('startRound', { targetName: game.players[targets[index]].name });
       });
     }
   });
 
-  socket.on('scorePlayer', ({ code, playerId, action }) => {
-    code = (code || '').toUpperCase();
+  socket.on('selectCategory', ({ code, category }) => {
     const game = games[code];
-    if (!game) return;
+    if (game) {
+      const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
+      if (playerId) {
+        const qList = questions[category];
+        const randomQ = qList[Math.floor(Math.random() * qList.length)];
+        game.players[playerId].category = category;
+        game.players[playerId].question = randomQ;
+        game.players[playerId].status = 'answering';
+        socket.emit('questionAssigned', randomQ);
+      }
+    }
+  });
 
-    const current = getGameBySocketId(socket.id);
-    if (!current || current.code !== code) return;
-    if (current.player.playerId !== game.hostPlayerId) return;
+  socket.on('submitAnswer', ({ code, answer }) => {
+    const game = games[code];
+    if (game) {
+      const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
+      if (playerId) {
+        game.players[playerId].answer = answer;
+        game.players[playerId].status = 'done';
+        socket.emit('waitingForOthers');
+        
+        const allDone = Object.values(game.players).every(p => p.status === 'done');
+        if (allDone) {
+          game.status = 'resolution';
+          io.to(game.currentHostSocketId).emit('allAnswersSubmitted', Object.values(game.players).map(p => ({
+            id: p.id, name: p.name, targetName: game.players[p.targetId].name,
+            category: p.category, question: p.question, answer: p.answer
+          })));
+        }
+      }
+    }
+  });
 
-    const player = game.players[playerId];
-    if (!player) return;
-
-    if (player.judged) return;
-    player.judged = true;
-
-    if (action === 'busted') player.score -= 1;
-
-    if (action === 'true') {
-      if (player.category === 'verte') player.score += 1;
-      if (player.category === 'jaune') player.score += 2;
-      if (player.category === 'rouge') player.score += 3;
+  socket.on('scorePlayer', ({ code, playerId, action }) => {
+    const game = games[code];
+    // Seul le Host actuel a le droit de scorer
+    if (game && game.currentHostSocketId === socket.id) {
+      const player = game.players[playerId];
+      if (player) {
+          if (action === 'busted') player.score -= 1;
+          if (action === 'true') {
+            if (player.category === 'verte') player.score += 1;
+            if (player.category === 'jaune') player.score += 2;
+            if (player.category === 'rouge') player.score += 3;
+          }
+      }
     }
   });
 
   socket.on('showScores', (code) => {
-    code = (code || '').toUpperCase();
     const game = games[code];
-    if (!game) return;
-
-    const current = getGameBySocketId(socket.id);
-    if (!current || current.code !== code) return;
-    if (current.player.playerId !== game.hostPlayerId) return;
-
-    game.status = 'scores';
-    io.to(code).emit('displayScores', getScores(game));
+    if (game && game.currentHostSocketId === socket.id) {
+      game.status = 'scores';
+      const scores = Object.values(game.players).map(p => ({ name: p.name, score: p.score })).sort((a, b) => b.score - a.score);
+      io.to(code).emit('displayScores', scores);
+    }
   });
 
   socket.on('nextRound', (code) => {
-    code = (code || '').toUpperCase();
-    const game = games[code];
-    if (!game) return;
-
-    const current = getGameBySocketId(socket.id);
-    if (!current || current.code !== code) return;
-    if (current.player.playerId !== game.hostPlayerId) return;
-
-    game.round += 1;
-    game.status = 'lobby';
-
-    Object.values(game.players).forEach(p => {
-      p.status = 'waiting';
-      p.targetPlayerId = null;
-      p.category = null;
-      p.question = null;
-      p.answer = null;
-      p.judged = false;
-    });
-
-    io.to(code).emit('backToLobby');
-    emitPlayersUpdate(code);
-  });
-
-  socket.on('disconnect', () => {
-    const current = getGameBySocketId(socket.id);
-    if (!current) return;
-
-    const { code, game, player } = current;
-    player.connected = false;
-    player.socketId = null;
-
-    emitPlayersUpdate(code);
-
-    const everyoneDisconnected = Object.values(game.players).every(p => !p.connected);
-
-    if (everyoneDisconnected) {
-      setTimeout(() => {
-        const stillExists = games[code];
-        if (!stillExists) return;
-
-        const stillEveryoneDisconnected = Object.values(stillExists.players).every(p => !p.connected);
-        if (stillEveryoneDisconnected) {
-          delete games[code];
-          console.log(⁠ Partie ${code} supprimée car tous les joueurs sont déconnectés. ⁠);
-        }
-      }, 1000 * 60 * 60 * 6);
-    }
+      const game = games[code];
+      if (game && game.currentHostSocketId === socket.id) {
+          game.round += 1;
+          game.status = 'lobby';
+          // Réinitialise le statut des joueurs
+          Object.keys(game.players).forEach(id => {
+              game.players[id].status = 'waiting';
+          });
+          io.to(code).emit('backToLobby');
+      }
   });
 });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(⁠ Serveur lancé sur le port ${PORT} ⁠);
+  console.log(`Serveur prêt sur port ${PORT}`);
 });
