@@ -34,7 +34,6 @@ const questions = {
     "Tu es plutôt 'Team Chien' ou 'Team Chat' ?",
     "C’est quoi ton prochain lieu de vacances ?",
     "Quelle est ta destination de rêve absolue ?",
-    "C'est quoi la dernière série que t'as terminée ?",
     "Quel est ton endroit préféré pour boire un verre dans le coin ?",
     "Tu préfères que chacun prenne son plat ou partager genre tapas ?",
     "T’aimes bien les grandes tablées ?",
