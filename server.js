@@ -9,7 +9,7 @@ const io = new Server(server);
 app.use(express.static('public'));
 
 const questions = {
-  // Tes 90 questions (1_pt, 2_pts, 3_pts) sont ici (non modifiées pour ne pas surcharger la réponse)
+  // Garde tes 90 questions intactes ici !
   "1_pt": [
     "Quelle est la dernière analyse que tu as faite ?",
     "C'est quand la dernière fois que t'as commit sur Jira / Git ?",
@@ -114,21 +114,17 @@ function generateCode() {
   return Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
-// Nouvelle fonction asynchrone pour tirer 1 seule cible adaptée au flux continu
 function getNextTarget(playerId, playersData) {
   const allIds = Object.keys(playersData);
   const player = playersData[playerId];
   
-  // Exclure soi-même et les anciennes cibles
   let available = allIds.filter(id => id !== playerId && !player.pastTargets.includes(id));
   
-  // S'il a déjà fait tout le monde, on réinitialise sa mémoire pour éviter le blocage
   if (available.length === 0) {
     player.pastTargets = [];
     available = allIds.filter(id => id !== playerId);
   }
   
-  // S'il est seul dans la partie (test)
   if (available.length === 0) return playerId;
 
   const targetId = available[Math.floor(Math.random() * available.length)];
@@ -188,7 +184,6 @@ io.on('connection', (socket) => {
             targetName: game.players[game.players[id].targetId].name 
         });
       });
-      // Broadcast pour afficher le bouton "Arrêter la partie" chez l'hôte
       io.to(code).emit('gameStarted');
     }
   });
@@ -213,27 +208,34 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Nouveau : Soumission d'un joueur, envoi de son classement provisoire asynchrone
-  socket.on('submitRoundResult', ({ code, pointsEarned }) => {
+  // MODIFICATION ICI : Prise en charge du paramètre awardToTarget
+  socket.on('submitRoundResult', ({ code, pointsEarned, awardToTarget }) => {
     const game = games[code];
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
-        game.players[playerId].score += pointsEarned;
         
-        // Calcul du classement en direct
+        if (awardToTarget) {
+            // Si la cible a deviné la question, la cible gagne 1 point
+            const targetId = game.players[playerId].targetId;
+            if(game.players[targetId]) {
+                game.players[targetId].score += 1;
+            }
+        } else {
+            // Sinon (fin de processus classique), l'enquêteur gagne les points validés
+            game.players[playerId].score += pointsEarned;
+        }
+        
         const scores = Object.values(game.players)
             .map(p => ({ name: p.name, score: p.score }))
             .sort((a, b) => b.score - a.score);
             
-        // On notifie tout le monde du nouveau score en tâche de fond, et on affiche l'écran au joueur ayant terminé
         io.to(code).emit('updateLiveScores', scores); 
         socket.emit('showIntermediateScores', scores);
       }
     }
   });
 
-  // Nouveau : Un joueur demande sa cible suivante (sans attendre les autres)
   socket.on('nextTarget', (code) => {
     const game = games[code];
     if (game) {
@@ -245,7 +247,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Nouveau : Arrêt du jeu par l'hôte
   socket.on('stopGame', (code) => {
     const game = games[code];
     if (game && game.currentHostSocketId === socket.id) {
