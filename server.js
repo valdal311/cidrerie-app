@@ -8,8 +8,8 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-// Tes nouvelles questions Data Analyst Decathlon (30 par catégorie)
 const questions = {
+  // Tes 90 questions (1_pt, 2_pts, 3_pts) sont ici (non modifiées pour ne pas surcharger la réponse)
   "1_pt": [
     "Quelle est la dernière analyse que tu as faite ?",
     "C'est quand la dernière fois que t'as commit sur Jira / Git ?",
@@ -114,39 +114,26 @@ function generateCode() {
   return Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
-function assignTargets(playerIds, playersData) {
-  let attempts = 0;
-  let valid = false;
-  let targets = [];
-
-  while (!valid && attempts < 100) {
-    attempts++;
-    targets = [...playerIds].sort(() => Math.random() - 0.5);
-    valid = true;
-    for (let i = 0; i < playerIds.length; i++) {
-      let pId = playerIds[i];
-      let tId = targets[i];
-      if (pId === tId || (playersData[pId].pastTargets && playersData[pId].pastTargets.includes(tId))) {
-        valid = false;
-        break;
-      }
-    }
+// Nouvelle fonction asynchrone pour tirer 1 seule cible adaptée au flux continu
+function getNextTarget(playerId, playersData) {
+  const allIds = Object.keys(playersData);
+  const player = playersData[playerId];
+  
+  // Exclure soi-même et les anciennes cibles
+  let available = allIds.filter(id => id !== playerId && !player.pastTargets.includes(id));
+  
+  // S'il a déjà fait tout le monde, on réinitialise sa mémoire pour éviter le blocage
+  if (available.length === 0) {
+    player.pastTargets = [];
+    available = allIds.filter(id => id !== playerId);
   }
+  
+  // S'il est seul dans la partie (test)
+  if (available.length === 0) return playerId;
 
-  if (!valid) {
-    targets = [...playerIds];
-    for (let i = targets.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [targets[i], targets[j]] = [targets[j], targets[i]];
-    }
-    for (let i = 0; i < playerIds.length; i++) {
-      if (playerIds[i] === targets[i]) {
-        let swapIdx = (i + 1) % playerIds.length;
-        [targets[i], targets[swapIdx]] = [targets[swapIdx], targets[i]];
-      }
-    }
-  }
-  return targets;
+  const targetId = available[Math.floor(Math.random() * available.length)];
+  player.pastTargets.push(targetId);
+  return targetId;
 }
 
 io.on('connection', (socket) => {
@@ -157,7 +144,6 @@ io.on('connection', (socket) => {
       currentHostSocketId: socket.id,
       players: {},
       status: 'lobby',
-      round: 1,
       gameQuestions: JSON.parse(JSON.stringify(questions))
     };
     socket.join(code);
@@ -171,22 +157,16 @@ io.on('connection', (socket) => {
       
       if (existingPlayerId) {
           games[code].players[existingPlayerId].currentSocketId = socket.id;
-          if (games[code].host === existingPlayerId) {
-              games[code].currentHostSocketId = socket.id;
-          }
+          if (games[code].host === existingPlayerId) games[code].currentHostSocketId = socket.id;
       } else {
           if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
           games[code].players[socket.id] = { 
               id: socket.id, currentSocketId: socket.id, name, score: 0, status: 'waiting', pastTargets: []
           };
-          if (games[code].host === socket.id) {
-              games[code].currentHostSocketId = socket.id;
-          }
+          if (games[code].host === socket.id) games[code].currentHostSocketId = socket.id;
       }
 
-      const player = games[code].players[existingPlayerId || socket.id];
       const isHost = (games[code].currentHostSocketId === socket.id);
-
       socket.join(code);
       io.to(code).emit('updatePlayers', Object.values(games[code].players));
       socket.emit('joined', { gameCode: code, status: games[code].status, isHost });
@@ -200,18 +180,16 @@ io.on('connection', (socket) => {
     if (game && game.currentHostSocketId === socket.id) {
       game.status = 'playing';
       const playerIds = Object.keys(game.players);
-      const targets = assignTargets(playerIds, game.players);
       
-      playerIds.forEach((id, index) => {
-        game.players[id].targetId = targets[index];
-        game.players[id].pastTargets.push(targets[index]);
+      playerIds.forEach(id => {
+        game.players[id].targetId = getNextTarget(id, game.players);
         game.players[id].status = 'playing';
-        
-        // Envoi de la cible de façon secrète à chaque joueur
         io.to(game.players[id].currentSocketId).emit('startRound', { 
-            targetName: game.players[targets[index]].name 
+            targetName: game.players[game.players[id].targetId].name 
         });
       });
+      // Broadcast pour afficher le bouton "Arrêter la partie" chez l'hôte
+      io.to(code).emit('gameStarted');
     }
   });
 
@@ -221,7 +199,7 @@ io.on('connection', (socket) => {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
         const qList = game.gameQuestions[category];
-        let randomQ = "Tu as épuisé toutes les questions de cette catégorie ! Pose une question de ton choix.";
+        let randomQ = "Tu as épuisé toutes les questions ! Pose une question de ton choix.";
         let points = category === '1_pt' ? 1 : category === '2_pts' ? 2 : 3;
         
         if (qList.length > 0) {
@@ -235,39 +213,48 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Nouveau : Le joueur soumet son résultat après son interaction IRL avec la cible
+  // Nouveau : Soumission d'un joueur, envoi de son classement provisoire asynchrone
   socket.on('submitRoundResult', ({ code, pointsEarned }) => {
     const game = games[code];
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
         game.players[playerId].score += pointsEarned;
-        game.players[playerId].status = 'done';
-        socket.emit('waitingForOthers');
         
-        // Vérifie si tout le monde a terminé
-        const allDone = Object.values(game.players).every(p => p.status === 'done');
-        if (allDone) {
-          game.status = 'scores';
-          const scores = Object.values(game.players)
+        // Calcul du classement en direct
+        const scores = Object.values(game.players)
             .map(p => ({ name: p.name, score: p.score }))
             .sort((a, b) => b.score - a.score);
-          io.to(code).emit('displayScores', scores);
-        }
+            
+        // On notifie tout le monde du nouveau score en tâche de fond, et on affiche l'écran au joueur ayant terminé
+        io.to(code).emit('updateLiveScores', scores); 
+        socket.emit('showIntermediateScores', scores);
       }
     }
   });
 
-  socket.on('nextRound', (code) => {
-      const game = games[code];
-      if (game && game.currentHostSocketId === socket.id) {
-          game.round += 1;
-          game.status = 'lobby';
-          Object.keys(game.players).forEach(id => {
-              game.players[id].status = 'waiting';
-          });
-          io.to(code).emit('backToLobby');
+  // Nouveau : Un joueur demande sa cible suivante (sans attendre les autres)
+  socket.on('nextTarget', (code) => {
+    const game = games[code];
+    if (game) {
+      const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
+      if (playerId) {
+        game.players[playerId].targetId = getNextTarget(playerId, game.players);
+        socket.emit('startRound', { targetName: game.players[game.players[playerId].targetId].name });
       }
+    }
+  });
+
+  // Nouveau : Arrêt du jeu par l'hôte
+  socket.on('stopGame', (code) => {
+    const game = games[code];
+    if (game && game.currentHostSocketId === socket.id) {
+        game.status = 'ended';
+        const scores = Object.values(game.players)
+            .map(p => ({ name: p.name, score: p.score }))
+            .sort((a, b) => b.score - a.score);
+        io.to(code).emit('gameEnded', scores);
+    }
   });
 
   socket.on('leaveGame', ({ code }) => {
