@@ -8,92 +8,103 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-// Tes questions exactes
+// Tes nouvelles questions Data Analyst Decathlon (30 par catégorie)
 const questions = {
-  "categorie_verte_faciles_et_valentin": [
-    "Depuis combien de temps tu connais Valentin ?",
-    "Comment t’as connu Valentin ?",
-    "Si Valentin devait être un Animal ça serait quoi ?",
-    "Est-ce que Valentin est plus fort que toi au surf ?",
-    "Est-ce que Valentin cuisine mieux qu'il ne surfe ?",
-    "C’est quoi le premier truc que Valentin t’a appris (ou essayé de t’apprendre) ?",
-    "Quel est le surnom le plus ridicule que tu donnes à Valentin ?",
-    "Est-ce que Valentin est du genre à arriver en avance ou toujours 10 min après ?",
-    "Si Valentin gagnait au loto, il achèterait quoi en premier selon toi ?",
-    "Quel est l'émoji que Valentin utilise le plus ?",
-    "Est-ce que Valentin chante bien ?",
-    "C'est quoi la manie la plus drôle de Valentin ?",
-    "Si Valentin devait participer à une émission de télé, ce serait laquelle ?",
-    "Quand vous sortez avec Valentin, Qui est le plus sage des deux quand vous sortez ?",
-    "A ton avis Valentin il est plutot sucré ou salé ?",
-    "Comment t’es venu ce soir ?",
-    "Qu’est ce que t’as pris à manger ce soir ?",
-    "Qu’est-ce que tu fais ce weekend ?",
-    "C’est quoi ton programme pour demain matin ?",
-    "T’es plutôt montagne ou océan ?",
-    "Tu es plutôt 'Team Chien' ou 'Team Chat' ?",
-    "C’est quoi ton prochain lieu de vacances ?",
-    "Quelle est ta destination de rêve absolue ?",
-    "Quel est ton endroit préféré pour boire un verre dans le coin ?",
-    "Tu préfères que chacun prenne son plat ou partager genre tapas ?",
-    "T’aimes bien les grandes tablées ?",
-    "Tu la prends comment ta viande ?",
-    "T'as déjà cassé des noix avec ton front dans une cidrerie ?",
-    "Quel est l'aliment que tu détestes le plus au monde ?",
-    "C’est quand la dernière fois que t’as déjà été à une cidrerie ?",
-    "Quel est le sport dans lequel tu excelles le plus ?",
-    "C’est quoi le meilleur truc que t’aies mangé dans une cidrerie ?"
+  "1_pt": [
+    "Quelle est la dernière analyse que tu as faite ?",
+    "C'est quand la dernière fois que t'as commit sur Jira / Git ?",
+    "T'as déjà bossé avec un category manager ?",
+    "T'utilises github copilot pour faire quoi ?",
+    "Quel est ton raccourci clavier préféré sur ton IDE ?",
+    "Quelle est ta table BigQuery la plus requêtée ?",
+    "Quel est le sport prioritaire sur lequel tu as le plus travaillé ce mois-ci ?",
+    "T'as fait combien de visios aujourd'hui ?",
+    "Quel est ton type de graphique préféré sur Tableau/Looker ?",
+    "C'est quand la dernière fois que t'as fait un DROP TABLE par erreur (ou presque) ?",
+    "T'es plutôt Python ou SQL pour nettoyer tes données ?",
+    "Quel est le canal Slack/Teams / Google Chat que tu checkes en premier le matin ?",
+    "C'est quoi la question la plus récurrente qu'un business te pose ?",
+    "As-tu déjà utilisé ChatGPT pour débugger du code aujourd'hui ?",
+    "Quel est ton jour préféré pour faire du télétravail ?",
+    "C'est quoi le meeting récurrent que tu préférerais annuler ?",
+    "Tu prends ton café/thé à quelle heure le matin ?",
+    "Quel est le dernier dashboard que tu as mis à jour ?",
+    "Tu mets combien de temps à répondre à un message en moyenne ?",
+    "Quel est ton casque audio pour t'isoler dans l'open space ?",
+    "T'es plutôt Dark Mode ou Light Mode sur tes outils ?",
+    "Quel est le KPI que tu calcules le plus souvent ?",
+    "As-tu déjà oublié de couper ton micro en réu ?",
+    "Quelle est ta commande Git la plus utilisée ?",
+    "T'as combien d'onglets ouverts sur ton navigateur là tout de suite ?",
+    "Quel est ton magasin Decathlon préféré ?",
+    "T'es plutôt data viz épurée ou tableau de chiffres massif ?",
+    "Quel est le dernier article technique que tu as lu ?",
+    "As-tu déjà fait une PR (Pull Request) refusée direct ?",
+    "Quel est le produit Decathlon que tu utilises le plus en ce moment ?"
   ],
-  "categorie_jaune_intermediaires": [
-    "Si tu gagnais au loto demain, quelle est la première chose que tu achèterais ?",
-    "Si tu pouvais avoir un super-pouvoir, lequel choisirais-tu ?",
-    "Quelle est la série que tu as 'binge-watchée' le plus vite ?",
-    "Quel est ton film préféré que tu peux voir 100 fois ?",
-    "Quel est le dernier livre qui t'a vraiment marqué ?",
-    "Si tu pouvais dîner avec une personnalité (morte ou vive), qui serait-ce ?",
-    "Quel objet emporterais-tu sur une île déserte (un seul !) ?",
-    "Quel métier rêvais-tu de faire quand tu étais petit ?",
-    "Quelle est ta Madeleine de Proust (une odeur, un goût qui te ramène en enfance) ?",
-    "Quel était ton dessin animé préféré que tu regardais en boucle ?",
-    "Quelle est ta chanson 'plaisir coupable' (que tu écoutes en cachette) ?",
-    "Quel est ton talent inutile (ex: faire le trèfle avec sa langue) ?",
-    "Que ferais-tu si tu étais invisible pendant 24 heures ?",
-    "Si tu devais changer de prénom, lequel choisirais-tu ?",
-    "Qu'est-ce qui te fait immédiatement rire à tous les coups ?",
-    "Quelle est la première chose que tu regardes chez quelqu'un ?",
-    "Si tu devais ouvrir un restaurant, ça serait quoi le concept ?",
-    "C'est quoi ta plus grande passion, celle qui te fait oublier de manger ?",
-    "Quelle est ta plus grande qualité (celle que tes amis citent toujours) ?",
-    "Quel est le meilleur conseil qu'on t'ait jamais donné ?",
-    "Quel est l'objet le plus bizarre que tu possèdes chez toi ?",
-    "Quel était ton adresse msn ou ton pseudo skyblog ?",
-    "T’as déjà été confondu avec quelqu’un d’autre ?",
-    "Si tu étais une star, tu serais qui ?"
+  "2_pts": [
+    "T'as présenté des choses dernièrement pour briller (shine) ?",
+    "T'as créé une rubrique ou une doc sur confluence récemment ?",
+    "Quel est le dashboard dont tu es le plus fier au niveau design ?",
+    "Quelle est la pire galère de données que tu as dû résoudre ce trimestre ?",
+    "T'as déjà convaincu un chef de produit grâce à une de tes analyses ?",
+    "C'est quoi le sujet data le plus sous-estimé par le business selon toi ?",
+    "As-tu déjà formé quelqu'un à un outil data chez Decathlon ?",
+    "Quel est le projet sur lequel tu aimerais avoir plus de temps pour bosser ?",
+    "Quelle est ta meilleure astuce pour optimiser une requête SQL très lente ?",
+    "C'est quoi la présentation qui t'a mis le plus la pression ?",
+    "As-tu déjà trouvé une insight qui a complètement changé une décision business ?",
+    "Quelle est la source de données la moins fiable avec laquelle tu dois composer ?",
+    "Quel process aimerais-tu automatiser d'urgence dans l'équipe ?",
+    "C'est quoi ton hack perso pour rester focus sur une tâche complexe ?",
+    "Quel est le dernier retour hyper positif que tu as reçu d'un stakeholder ?",
+    "As-tu déjà challengé un directeur commercial sur ses chiffres ?",
+    "Quelle est l'analyse qui t'a pris le plus de temps à cause de données sales ?",
+    "C'est quoi le buzzword data que tu n'en peux plus d'entendre ?",
+    "As-tu déjà sauvé un projet qui était mal embarqué ?",
+    "Quel est le modèle algorithmique que tu rêverais de mettre en place ?",
+    "T'as déjà dû expliquer un concept technique complexe à un novice complet ?",
+    "Quelle est la réunion la plus productive que tu aies eue cette semaine ?",
+    "C'est quoi ton rituel d'équipe préféré ?",
+    "T'as déjà fait du reverse engineering pour comprendre un vieux code hérité ?",
+    "Quelle est ta plus belle création de variable (feature engineering) ?",
+    "Quel est le sujet métier (sport) que tu connais sur le bout des doigts maintenant ?",
+    "T'as déjà découvert un bug majeur dans une extraction de données ?",
+    "Quelle est la meilleure initiative data prise par Decathlon ces dernières années selon toi ?",
+    "T'as déjà fait une analyse ad-hoc qui s'est transformée en projet pérenne ?",
+    "Quel collègue consultes-tu en premier quand tu es bloqué sur un problème technique ?"
   ],
-  "categorie_rouge_intimes_et_profondes": [
-    "Quelle est ta plus grande peur irrationnelle ?",
-    "Quels sont tes 3 ingrédients du bonheur ?",
-    "Quelle est la chose dont tu n'es pas le plus fier ?",
-    "Qui est la personne que tu appellerais en premier en cas de gros problème ?",
-    "Quel est ton plus gros défaut (celui qui agace tout le monde) ?",
-    "Quel est ton motto in life (ta devise) ?",
-    "Quel est ton pire souvenir d'école (la honte totale) ?",
-    "Quelle est la croyance absurde que tu as gardée le plus longtemps ?",
-    "Quel est le pire cadeau qu'on t'ait jamais offert ?",
-    "Si tu étais un Président, quelle est la première loi que mettrais-tu en place ?",
-    "Quelle est la pire application sur ton téléphone (celle que tu devrais supprimer) ?",
-    "Quel est le mensonge le plus culotté que tu aies jamais dit ?",
-    "Quelle est la pire gaffe que tu aies faite en public ?",
-    "Quelle est la pire blessure que tu t’aies faites ?",
-    "Quelle est la chose la plus courageuse que tu aies faite ?",
-    "Quelle est ta plus grande réussite personnelle ?",
-    "Si tu devais décrire ta vie en un titre de film, ce serait lequel ?",
-    "Si tu devais décrire ta vie en une musique ça serait laquelle ?",
-    "Quelle est la pire expérience culinaire que t'as eue ?",
-    "Quelle est la chose que tu veux faire à tout prix avant de mourir ?",
-    "Quel est l'aliment que tu ne pourrais jamais partager ?",
-    "T'es plutôt du genre à finir les assiettes des autres ?",
-    "T’as un ou une partenaire elle veut piquer dans ton plat tu partages ?"
+  "3_pts": [
+    "C'est quoi l'analyse la plus compliquée que tu aies faite chez Decathlon ?",
+    "C'est quoi l'analyse dont t'es le plus fier chez Decathlon ?",
+    "Quel est ton plus gros 'fail' ou erreur d'analyse et qu'en as-tu appris ?",
+    "Si tu pouvais changer une chose dans l'architecture data de Decathlon, ce serait quoi ?",
+    "Quel est l'impact business chiffré le plus important que tu aies généré ?",
+    "Quelle est l'hypothèse métier que tu étais sûr(e) de vérifier et qui s'est avérée fausse ?",
+    "C'est quoi le moment où tu t'es senti le plus utile pour l'entreprise ?",
+    "Quelle est la vision que tu as pour le rôle de Data Analyst d'ici 3 ans chez Decat' ?",
+    "As-tu déjà dû tenir tête à un manager sur une conclusion data impopulaire ?",
+    "Quel est le projet qui t'a fait le plus grandir techniquement ?",
+    "C'est quoi le plus grand défi pour aligner la data avec la stratégie des sports prioritaires ?",
+    "Quelle est la pire dette technique que tu aies dû éponger ?",
+    "Raconte un moment où tu as dû construire un modèle en partant d'une feuille totalement blanche.",
+    "Quelle est ton ambition professionnelle à long terme dans la Data ?",
+    "Quel est le problème algorithmique le plus épineux que tu aies craqué ?",
+    "C'est quoi l'insight la plus contre-intuitive que tu aies découverte ?",
+    "Si tu devais pitcher l'importance de ton équipe au CEO demain, tu dirais quoi ?",
+    "Raconte un projet qui a nécessité une vraie synergie entre plusieurs départements.",
+    "Quelle est la faille de qualité/confidentialité des données qui te fait le plus peur ?",
+    "Quel est le modèle de données (schema) le plus élégant que tu aies conçu ?",
+    "C'est quoi le plus grand sacrifice que tu aies fait pour tenir une deadline critique ?",
+    "As-tu déjà dû déconstruire complètement une certitude business établie depuis des années ?",
+    "Quelle est la plus belle reconnaissance que tu pourrais obtenir dans ton travail actuel ?",
+    "Quel est le projet data le plus innovant que tu as vu chez Decathlon (même si ce n'est pas toi) ?",
+    "Si tu avais un budget illimité pour la tech data, tu achèterais quel outil ?",
+    "Quel est l'obstacle culturel le plus dur à franchir pour rendre l'entreprise 'Data Driven' ?",
+    "As-tu déjà vécu une situation de 'Data Quality' critique qui aurait pu impacter les magasins ?",
+    "Quel est l'algorithme ou la méthode statistique dont tu maîtrises toutes les subtilités ?",
+    "C'est quoi le conseil le plus précieux que tu donnerais à un Data Analyst Junior qui arrive ?",
+    "Quelle est la métrique ou l'indicateur dont l'entreprise se passe aujourd'hui mais qui serait révolutionnaire ?"
   ]
 };
 
@@ -103,13 +114,11 @@ function generateCode() {
   return Math.random().toString(36).substring(2, 6).toUpperCase();
 }
 
-// Fonction de tirage au sort INTELLIGENTE (avec mémoire)
 function assignTargets(playerIds, playersData) {
   let attempts = 0;
   let valid = false;
   let targets = [];
 
-  // On essaie de trouver une combinaison parfaite (pas soi-même + pas une ancienne cible)
   while (!valid && attempts < 100) {
     attempts++;
     targets = [...playerIds].sort(() => Math.random() - 0.5);
@@ -117,8 +126,6 @@ function assignTargets(playerIds, playersData) {
     for (let i = 0; i < playerIds.length; i++) {
       let pId = playerIds[i];
       let tId = targets[i];
-      
-      // Invalide si on se tire soi-même ou si on a DÉJÀ eu cette cible dans un round précédent
       if (pId === tId || (playersData[pId].pastTargets && playersData[pId].pastTargets.includes(tId))) {
         valid = false;
         break;
@@ -126,7 +133,6 @@ function assignTargets(playerIds, playersData) {
     }
   }
 
-  // Si on est bloqués (trop de rounds joués), on fait un tirage simple (juste pas soi-même)
   if (!valid) {
     targets = [...playerIds];
     for (let i = targets.length - 1; i > 0; i--) {
@@ -140,7 +146,6 @@ function assignTargets(playerIds, playersData) {
       }
     }
   }
-  
   return targets;
 }
 
@@ -153,8 +158,7 @@ io.on('connection', (socket) => {
       players: {},
       status: 'lobby',
       round: 1,
-      // On crée une copie des questions propre à cette partie pour pouvoir en supprimer au fur et à mesure
-      gameQuestions: JSON.parse(JSON.stringify(questions)) 
+      gameQuestions: JSON.parse(JSON.stringify(questions))
     };
     socket.join(code);
     socket.emit('gameCreated', code);
@@ -173,12 +177,7 @@ io.on('connection', (socket) => {
       } else {
           if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
           games[code].players[socket.id] = { 
-              id: socket.id, 
-              currentSocketId: socket.id, 
-              name, 
-              score: 0, 
-              status: 'waiting',
-              pastTargets: [] // Initialisation de la mémoire des cibles
+              id: socket.id, currentSocketId: socket.id, name, score: 0, status: 'waiting', pastTargets: []
           };
           if (games[code].host === socket.id) {
               games[code].currentHostSocketId = socket.id;
@@ -191,24 +190,6 @@ io.on('connection', (socket) => {
       socket.join(code);
       io.to(code).emit('updatePlayers', Object.values(games[code].players));
       socket.emit('joined', { gameCode: code, status: games[code].status, isHost });
-      
-      if (games[code].status === 'playing') {
-          socket.emit('startRound', { targetName: games[code].players[player.targetId].name });
-          if (player.question) socket.emit('questionAssigned', player.question);
-          if (player.status === 'done') socket.emit('waitingForOthers');
-      } else if (games[code].status === 'resolution') {
-          if (isHost) {
-              socket.emit('allAnswersSubmitted', Object.values(games[code].players).map(p => ({
-                id: p.id, name: p.name, targetName: games[code].players[p.targetId].name,
-                category: p.category, question: p.question, answer: p.answer
-              })));
-          } else {
-              socket.emit('waitingForOthers');
-          }
-      } else if (games[code].status === 'scores') {
-          const scores = Object.values(games[code].players).map(p => ({ name: p.name, score: p.score })).sort((a, b) => b.score - a.score);
-          socket.emit('displayScores', scores);
-      }
     } else {
       socket.emit('error', 'Partie introuvable.');
     }
@@ -219,21 +200,17 @@ io.on('connection', (socket) => {
     if (game && game.currentHostSocketId === socket.id) {
       game.status = 'playing';
       const playerIds = Object.keys(game.players);
-      
-      // Nouveau système de tirage
       const targets = assignTargets(playerIds, game.players);
       
       playerIds.forEach((id, index) => {
         game.players[id].targetId = targets[index];
-        // On mémorise la cible pour les prochains rounds
-        game.players[id].pastTargets.push(targets[index]); 
+        game.players[id].pastTargets.push(targets[index]);
+        game.players[id].status = 'playing';
         
-        game.players[id].status = 'choosing_category';
-        delete game.players[id].question;
-        delete game.players[id].answer;
-        delete game.players[id].category;
-        
-        io.to(game.players[id].currentSocketId).emit('startRound', { targetName: game.players[targets[index]].name });
+        // Envoi de la cible de façon secrète à chaque joueur
+        io.to(game.players[id].currentSocketId).emit('startRound', { 
+            targetName: game.players[targets[index]].name 
+        });
       });
     }
   });
@@ -243,71 +220,41 @@ io.on('connection', (socket) => {
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
-        let catKey = "";
-        if (category === 'verte') catKey = "categorie_verte_faciles_et_valentin";
-        if (category === 'jaune') catKey = "categorie_jaune_intermediaires";
-        if (category === 'rouge') catKey = "categorie_rouge_intimes_et_profondes";
-
-        const qList = game.gameQuestions[catKey];
-        let randomQ = "Tu as épuisé toutes les questions de cette catégorie ! Pose une question de ton choix."; // Au cas où
+        const qList = game.gameQuestions[category];
+        let randomQ = "Tu as épuisé toutes les questions de cette catégorie ! Pose une question de ton choix.";
+        let points = category === '1_pt' ? 1 : category === '2_pts' ? 2 : 3;
         
         if (qList.length > 0) {
             const randomIndex = Math.floor(Math.random() * qList.length);
             randomQ = qList[randomIndex];
-            // On supprime la question du paquet pour qu'elle ne retombe jamais
             qList.splice(randomIndex, 1);
         }
 
-        game.players[playerId].category = category; 
-        game.players[playerId].question = randomQ;
-        game.players[playerId].status = 'answering';
-        socket.emit('questionAssigned', randomQ);
+        socket.emit('questionAssigned', { question: randomQ, points: points });
       }
     }
   });
 
-  socket.on('submitAnswer', ({ code, answer }) => {
+  // Nouveau : Le joueur soumet son résultat après son interaction IRL avec la cible
+  socket.on('submitRoundResult', ({ code, pointsEarned }) => {
     const game = games[code];
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
-        game.players[playerId].answer = answer;
+        game.players[playerId].score += pointsEarned;
         game.players[playerId].status = 'done';
         socket.emit('waitingForOthers');
         
+        // Vérifie si tout le monde a terminé
         const allDone = Object.values(game.players).every(p => p.status === 'done');
         if (allDone) {
-          game.status = 'resolution';
-          io.to(game.currentHostSocketId).emit('allAnswersSubmitted', Object.values(game.players).map(p => ({
-            id: p.id, name: p.name, targetName: game.players[p.targetId].name,
-            category: p.category, question: p.question, answer: p.answer
-          })));
+          game.status = 'scores';
+          const scores = Object.values(game.players)
+            .map(p => ({ name: p.name, score: p.score }))
+            .sort((a, b) => b.score - a.score);
+          io.to(code).emit('displayScores', scores);
         }
       }
-    }
-  });
-
-  socket.on('scorePlayer', ({ code, playerId, action }) => {
-    const game = games[code];
-    if (game && game.currentHostSocketId === socket.id) {
-      const player = game.players[playerId];
-      if (player) {
-          if (action === 'busted') player.score -= 1;
-          if (action === 'true') {
-            if (player.category === 'verte') player.score += 1;
-            if (player.category === 'jaune') player.score += 2;
-            if (player.category === 'rouge') player.score += 3;
-          }
-      }
-    }
-  });
-
-  socket.on('showScores', (code) => {
-    const game = games[code];
-    if (game && game.currentHostSocketId === socket.id) {
-      game.status = 'scores';
-      const scores = Object.values(game.players).map(p => ({ name: p.name, score: p.score })).sort((a, b) => b.score - a.score);
-      io.to(code).emit('displayScores', scores);
     }
   });
 
