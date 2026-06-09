@@ -244,7 +244,7 @@
       document.getElementById('answer-input').value = '';
       currentTargetName = targetName;
       document.getElementById('target-name').innerText = targetName;
-      document.getElementById('question-target-name').innerText = targetName; // Mémoire de la cible !
+      document.getElementById('question-target-name').innerText = targetName;
       document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
       showScreen('screen-category');
     });
@@ -280,14 +280,14 @@
     function guessFail() {
         chancesLeft--;
         if (chancesLeft <= 0) {
-            alert("Perdu ! Plus de chances. On passe à la validation de la réponse.");
+            // MODIFICATION ICI : Message positif d'encouragement
+            alert("Ok l'espion, voyons voir si ta réponse est bonne !");
             goToValidationPhase();
         } else {
             updateChancesUI();
         }
     }
 
-    // MODIFICATION ICI : La cible gagne le point, l'enquêteur gagne 0.
     function guessSuccess() { 
         alert("Pas assez discret ! " + currentTargetName + " a deviné la question et gagne 1 point. Tu gagnes 0 point.");
         socket.emit('submitRoundResult', { code: myCode, pointsEarned: 0, awardToTarget: true });
@@ -301,7 +301,6 @@
         showScreen('screen-validation');
     }
 
-    // MODIFICATION ICI : On précise que c'est un flux classique (awardToTarget: false)
     function submitFinalResult(isValid) {
         const pointsEarned = isValid ? currentPoints : 0;
         socket.emit('submitRoundResult', { code: myCode, pointsEarned: pointsEarned, awardToTarget: false });
