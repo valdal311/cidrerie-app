@@ -18,7 +18,10 @@
     .header-title { font-size: 1.1em; font-weight: bold; color: var(--accent-green); margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
     
     .btn-leave { position: absolute; right: 15px; top: 12px; background: none; border: none; font-size: 24px; cursor: pointer; display: none; color: white; }
-    .btn-stop { position: absolute; left: 15px; top: 12px; background: #e74c3c; border: none; font-size: 12px; font-weight: bold; cursor: pointer; display: none; color: white; padding: 6px 10px; border-radius: 8px; }
+    
+    /* Conteneur des boutons hôte */
+    .host-controls { position: absolute; left: 15px; top: 12px; display: none; gap: 8px; }
+    .btn-host { border: none; font-size: 12px; font-weight: bold; cursor: pointer; color: white; padding: 6px 10px; border-radius: 8px; }
 
     .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
     .screen { display: none; width: 100%; max-width: 400px; margin-top: 2vh; }
@@ -44,14 +47,25 @@
     .answer-quote { font-style: italic; color: var(--primary-blue); font-size: 1.2em; padding: 15px; background: rgba(58, 69, 163, 0.1); border-radius: 8px; margin: 15px 0; }
     .chances-text { font-weight: bold; color: #f39c12; font-size: 1.2em; margin-bottom: 20px;}
     .instruction-text { font-size: 1.1em; color: #555; line-height: 1.4; margin-bottom: 15px;}
+
+    /* CSS pour les Modals Hôte */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; }
+    .modal-content { background: #fff; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border-radius: 16px; padding: 20px; position: relative; }
+    .btn-close-modal { position: absolute; right: 15px; top: 15px; background: #eee; border: none; font-size: 16px; cursor: pointer; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; }
+    .history-card { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--primary-blue); text-align: left; }
   </style>
 </head>
 <body>
   <div class="header">
-    <button id="btn-stop" class="btn-stop" onclick="stopGame()">Arrêter la partie</button>
+    <div id="host-controls" class="host-controls">
+        <button class="btn-host" style="background: #e74c3c;" onclick="stopGame()">Arrêter</button>
+        <button class="btn-host" style="background: #f39c12;" onclick="requestLeaderboard()">Classement</button>
+        <button class="btn-host" style="background: #2ecc71;" onclick="requestHistory()">Historique</button>
+    </div>
     <p class="header-title">Local Insights Team Meeting Juin 2026</p>
     <button id="btn-leave" class="btn-leave" onclick="leaveGame()">🚪</button>
   </div>
+  
   <div class="app-container">
     
     <div id="screen-home" class="screen active">
@@ -107,9 +121,7 @@
     <div id="screen-guess" class="screen">
       <div class="card">
         <p class="instruction-text">Fais deviner à <strong id="guess-target-name" style="color:var(--primary-blue); font-size:1.2em;"></strong> la question que tu as tirée !</p>
-        
         <p class="chances-text" id="chances-display">3 chances restantes</p>
-        
         <button class="btn-pill btn-success" onclick="guessSuccess()">✅ Trouvé !</button>
         <button class="btn-pill btn-danger" onclick="guessFail()">❌ Pas trouvé</button>
       </div>
@@ -120,12 +132,9 @@
         <h2>Validation Finale</h2>
         <p style="color: #666; margin-top: 15px; font-size: 0.9em;">Question posée :</p>
         <h3 id="val-question" style="color: var(--primary-blue); margin: 5px 0 15px 0;"></h3>
-        
         <p style="color: #666; font-size: 0.9em;">Réponse notée :</p>
         <div class="answer-quote" id="val-answer"></div>
-        
         <p style="margin-top:20px; font-weight:bold;">Réponse validée ?</p>
-        
         <button class="btn-pill btn-success" onclick="submitFinalResult(true)">OUI, VALIDÉ (+ <span id="val-points"></span> PTS)</button>
         <button class="btn-pill btn-danger" onclick="submitFinalResult(false)">NON, REJETÉ (0 PT)</button>
       </div>
@@ -146,7 +155,22 @@
         <button class="btn-pill btn-danger" style="margin-top:20px;" onclick="leaveGame()">Quitter la partie</button>
       </div>
     </div>
+  </div>
 
+  <div id="modal-leaderboard" class="modal">
+      <div class="modal-content">
+          <button class="btn-close-modal" onclick="closeModal('modal-leaderboard')">✖</button>
+          <h2 style="color: var(--primary-blue); margin-bottom: 20px;">Classement en direct</h2>
+          <div id="modal-scores-list"></div>
+      </div>
+  </div>
+
+  <div id="modal-history" class="modal">
+      <div class="modal-content">
+          <button class="btn-close-modal" onclick="closeModal('modal-history')">✖</button>
+          <h2 style="color: var(--primary-blue); margin-bottom: 20px;">Historique des Réponses</h2>
+          <div id="modal-history-list"></div>
+      </div>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
@@ -237,7 +261,7 @@
     function startGame() { socket.emit('startGame', myCode); }
     
     socket.on('gameStarted', () => {
-        if(isHost) document.getElementById('btn-stop').style.display = 'block';
+        if(isHost) document.getElementById('host-controls').style.display = 'flex';
     });
 
     socket.on('startRound', ({ targetName }) => {
@@ -263,11 +287,9 @@
     function startGuessPhase() {
       const answer = document.getElementById('answer-input').value;
       if(!answer) return alert("N'oublie pas de noter la réponse !");
-      
       chancesLeft = 3;
       document.getElementById('guess-target-name').innerText = currentTargetName;
       updateChancesUI();
-      
       showScreen('screen-guess');
     }
 
@@ -280,7 +302,6 @@
     function guessFail() {
         chancesLeft--;
         if (chancesLeft <= 0) {
-            // MODIFICATION ICI : Message positif d'encouragement
             alert("Ok l'espion, voyons voir si ta réponse est bonne !");
             goToValidationPhase();
         } else {
@@ -301,9 +322,16 @@
         showScreen('screen-validation');
     }
 
+    // Mise à jour pour inclure les données de la réponse pour l'historique
     function submitFinalResult(isValid) {
         const pointsEarned = isValid ? currentPoints : 0;
-        socket.emit('submitRoundResult', { code: myCode, pointsEarned: pointsEarned, awardToTarget: false });
+        const answer = document.getElementById('answer-input').value;
+        socket.emit('submitRoundResult', { 
+            code: myCode, 
+            pointsEarned: pointsEarned, 
+            awardToTarget: false,
+            answerData: { question: currentQuestion, answer: answer }
+        });
     }
 
     socket.on('showIntermediateScores', (scores) => {
@@ -315,10 +343,33 @@
       renderScores(scores, 'scores-list');
     });
 
-    function nextTarget() {
-        socket.emit('nextTarget', myCode);
-    }
+    function nextTarget() { socket.emit('nextTarget', myCode); }
     
+    // Fonctions des Modals pour l'Hôte
+    function requestLeaderboard() { socket.emit('requestLeaderboard', myCode); }
+    function requestHistory() { socket.emit('requestHistory', myCode); }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+    socket.on('showLeaderboardModal', (scores) => {
+        renderScores(scores, 'modal-scores-list');
+        document.getElementById('modal-leaderboard').style.display = 'flex';
+    });
+
+    socket.on('showHistoryModal', (history) => {
+        const list = document.getElementById('modal-history-list');
+        list.innerHTML = '';
+        if(history.length === 0) list.innerHTML = "<p>Aucune réponse validée pour le moment.</p>";
+        history.forEach(item => {
+            list.innerHTML += `
+            <div class="history-card">
+                <p style="font-size:0.9em; color:#666;"><strong>${item.asker}</strong> a interrogé <strong>${item.target}</strong></p>
+                <p style="color:var(--primary-blue); font-weight:bold; margin-top:5px;">Q: ${item.question}</p>
+                <p style="color:#2ecc71; font-style:italic;">R: "${item.answer}"</p>
+            </div>`;
+        });
+        document.getElementById('modal-history').style.display = 'flex';
+    });
+
     function stopGame() {
         if(confirm("Veux-tu vraiment arrêter la partie pour tout le monde ?")) {
             socket.emit('stopGame', myCode);
@@ -326,7 +377,7 @@
     }
 
     socket.on('gameEnded', (scores) => {
-        document.getElementById('btn-stop').style.display = 'none';
+        document.getElementById('host-controls').style.display = 'none';
         renderScores(scores, 'final-scores-list');
         showScreen('screen-final');
     });
