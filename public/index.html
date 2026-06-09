@@ -1,234 +1,294 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Match & Reveal</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1a1a1a; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
-    .header { background: #fff; padding: 15px; text-align: center; box-shadow: 0 1px 10px rgba(0,0,0,0.05); position: relative; }
-    .header-title { font-size: 1.5em; font-weight: bold; background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; }
-    .btn-leave { position: absolute; right: 15px; top: 12px; background: none; border: none; font-size: 24px; cursor: pointer; display: none; }
-    .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
-    .screen { display: none; width: 100%; max-width: 380px; margin-top: 2vh; }
-    .active { display: block; }
-    .card { background: #fff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 30px 20px; text-align: center; margin-bottom: 30px; }
-    .profile-card { padding-top: 40px; padding-bottom: 40px; }
-    .avatar { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #FF9B9B 0%, #FFD1D1 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5em; font-weight: bold; margin: 0 auto 20px; }
-    .target-name { font-size: 1.8em; font-weight: bold; color: #1a1a1a; margin: 0; }
-    input[type="text"] { padding: 18px; width: calc(100% - 36px); margin: 15px 0; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; text-align: center; outline: none; }
-    .btn-pill { padding: 18px 30px; margin: 10px 0; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
-    .btn-gradient { background: linear-gradient(262deg, #ff7854 10%, #fd267d 100%); color: white; box-shadow: 0 4px 10px rgba(253, 38, 125, 0.3); }
-    .btn-gray { background: #fff; border: 2px solid #ddd; color: #555; }
-    .action-buttons { display: flex; justify-content: center; gap: 20px; padding: 20px 0; }
-    .btn-circle { width: 60px; height: 60px; border-radius: 50%; border: none; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; background: #fff; box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
-    .btn-circle.cat-verte { border: 2px solid #2ecc71; color: #2ecc71; }
-    .btn-circle.cat-jaune { border: 2px solid #f1c40f; color: #f1c40f; }
-    .btn-circle.cat-rouge { border: 2px solid #e74c3c; color: #e74c3c; }
-    .btn-judge { padding: 12px 15px; border-radius: 25px; border: 2px solid; font-weight: bold; cursor: pointer; background: #fff; font-size: 14px; margin-bottom: 5px; }
-    .btn-judge.busted { border-color: #9b59b6; color: #9b59b6; }
-    .btn-judge.false { border-color: #e74c3c; color: #e74c3c; }
-    .btn-judge.true { border-color: #2ecc71; color: #2ecc71; }
-    .list-item { background: #fff; padding: 15px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .resolution-card { background: #fff; padding: 20px; margin: 20px 0; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); text-align: left; }
-    .res-question { font-weight: 600; color: #333; margin: 10px 0; }
-    .res-answer { color: #fd267d; font-style: italic; margin-bottom: 15px; }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <p class="header-title">MATCH & REVEAL</p>
-    <button id="btn-leave" class="btn-leave" onclick="leaveGame()" title="Quitter la partie">🚪</button>
-  </div>
-  <div class="app-container">
-    <div id="screen-home" class="screen active">
-      <div class="card">
-        <h1>🤫</h1><h2>Secrets & Révélations</h2>
-        <input type="text" id="join-name" placeholder="Ton Prénom">
-        <button class="btn-pill btn-gradient" onclick="createGame()">Créer une partie</button>
-        <button class="btn-pill btn-gray" onclick="showScreenJoin()">Rejoindre</button>
-      </div>
-    </div>
-    <div id="screen-join" class="screen">
-      <div class="card">
-        <h3>Entre le Code</h3>
-        <input type="text" id="join-code" placeholder="Code (4 lettres)" maxlength="4">
-        <button class="btn-pill btn-gradient" onclick="joinGame()">Rejoindre la partie</button>
-        <button class="btn-pill btn-gray" onclick="showScreen('screen-home')">Retour</button>
-      </div>
-    </div>
-    <div id="screen-lobby" class="screen">
-      <div class="card">
-        <p style="text-transform: uppercase; color: #888; letter-spacing: 1px;">Code de la partie</p>
-        <h2 id="display-code" style="color:#fd267d; font-size: 2.8em; margin: 5px 0;">----</h2>
-        <div id="players-list"></div>
-        <button id="btn-start" class="btn-pill btn-gradient" style="display:none;" onclick="startGame()">Lancer le Round</button>
-      </div>
-    </div>
-    <div id="screen-category" class="screen">
-      <div class="card profile-card">
-        <div class="avatar" id="target-avatar">?</div>
-        <p class="target-name" id="target-name"></p>
-      </div>
-      <div class="action-buttons">
-        <button class="btn-circle cat-verte" onclick="selectCategory('verte')">💚</button>
-        <button class="btn-circle cat-jaune" onclick="selectCategory('jaune')">⭐</button>
-        <button class="btn-circle cat-rouge" onclick="selectCategory('rouge')">🔥</button>
-      </div>
-    </div>
-    <div id="screen-question" class="screen">
-      <div class="card"><h3 id="question-text"></h3><input type="text" id="answer-input" placeholder="Ta réponse..."><button class="btn-pill btn-gradient" onclick="submitAnswer()">Valider</button></div>
-    </div>
-    <div id="screen-waiting" class="screen"><div class="card"><h2>⏳👀 Suspens...</h2><p>Attends que tout le monde ait fini.</p></div></div>
-    <div id="screen-host-resolution" class="screen"><div id="resolutions-container"></div><button class="btn-pill btn-gradient" onclick="showScores()">Voir les Scores</button></div>
-    <div id="screen-scores" class="screen"><div class="card"><h2>Classement</h2><div id="scores-list"></div><button id="btn-next-round" class="btn-pill btn-gradient" style="display:none;" onclick="nextRound()">Round Suivant</button></div></div>
-  </div>
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    let myCode = localStorage.getItem('gameCode') || '';
-    let myName = localStorage.getItem('playerName') || '';
-    let isHost = false;
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
-    socket.on('connect', () => {
-        if (myCode && myName) socket.emit('joinGame', { code: myCode, name: myName });
-    });
+app.use(express.static('public'));
 
-    // Amélioration de la gestion des erreurs pour vider la mémoire
-    socket.on('error', (msg) => {
-        alert(msg);
-        if (msg.includes('introuvable') || msg.includes('fermé') || msg.includes('déjà commencée')) {
-            localStorage.removeItem('gameCode');
-            window.location.reload();
-        }
-    });
+// Tes nouvelles questions Data Analyst Decathlon (30 par catégorie)
+const questions = {
+  "1_pt": [
+    "Quelle est la dernière analyse que tu as faite ?",
+    "C'est quand la dernière fois que t'as commit sur Jira / Git ?",
+    "T'as déjà bossé avec un category manager ?",
+    "T'utilises github copilot pour faire quoi ?",
+    "Quel est ton raccourci clavier préféré sur ton IDE ?",
+    "Quelle est ta table BigQuery la plus requêtée ?",
+    "Quel est le sport prioritaire sur lequel tu as le plus travaillé ce mois-ci ?",
+    "T'as fait combien de visios aujourd'hui ?",
+    "Quel est ton type de graphique préféré sur Tableau/Looker ?",
+    "C'est quand la dernière fois que t'as fait un DROP TABLE par erreur (ou presque) ?",
+    "T'es plutôt Python ou SQL pour nettoyer tes données ?",
+    "Quel est le canal Slack/Teams / Google Chat que tu checkes en premier le matin ?",
+    "C'est quoi la question la plus récurrente qu'un business te pose ?",
+    "As-tu déjà utilisé ChatGPT pour débugger du code aujourd'hui ?",
+    "Quel est ton jour préféré pour faire du télétravail ?",
+    "C'est quoi le meeting récurrent que tu préférerais annuler ?",
+    "Tu prends ton café/thé à quelle heure le matin ?",
+    "Quel est le dernier dashboard que tu as mis à jour ?",
+    "Tu mets combien de temps à répondre à un message en moyenne ?",
+    "Quel est ton casque audio pour t'isoler dans l'open space ?",
+    "T'es plutôt Dark Mode ou Light Mode sur tes outils ?",
+    "Quel est le KPI que tu calcules le plus souvent ?",
+    "As-tu déjà oublié de couper ton micro en réu ?",
+    "Quelle est ta commande Git la plus utilisée ?",
+    "T'as combien d'onglets ouverts sur ton navigateur là tout de suite ?",
+    "Quel est ton magasin Decathlon préféré ?",
+    "T'es plutôt data viz épurée ou tableau de chiffres massif ?",
+    "Quel est le dernier article technique que tu as lu ?",
+    "As-tu déjà fait une PR (Pull Request) refusée direct ?",
+    "Quel est le produit Decathlon que tu utilises le plus en ce moment ?"
+  ],
+  "2_pts": [
+    "T'as présenté des choses dernièrement pour briller (shine) ?",
+    "T'as créé une rubrique ou une doc sur confluence récemment ?",
+    "Quel est le dashboard dont tu es le plus fier au niveau design ?",
+    "Quelle est la pire galère de données que tu as dû résoudre ce trimestre ?",
+    "T'as déjà convaincu un chef de produit grâce à une de tes analyses ?",
+    "C'est quoi le sujet data le plus sous-estimé par le business selon toi ?",
+    "As-tu déjà formé quelqu'un à un outil data chez Decathlon ?",
+    "Quel est le projet sur lequel tu aimerais avoir plus de temps pour bosser ?",
+    "Quelle est ta meilleure astuce pour optimiser une requête SQL très lente ?",
+    "C'est quoi la présentation qui t'a mis le plus la pression ?",
+    "As-tu déjà trouvé une insight qui a complètement changé une décision business ?",
+    "Quelle est la source de données la moins fiable avec laquelle tu dois composer ?",
+    "Quel process aimerais-tu automatiser d'urgence dans l'équipe ?",
+    "C'est quoi ton hack perso pour rester focus sur une tâche complexe ?",
+    "Quel est le dernier retour hyper positif que tu as reçu d'un stakeholder ?",
+    "As-tu déjà challengé un directeur commercial sur ses chiffres ?",
+    "Quelle est l'analyse qui t'a pris le plus de temps à cause de données sales ?",
+    "C'est quoi le buzzword data que tu n'en peux plus d'entendre ?",
+    "As-tu déjà sauvé un projet qui était mal embarqué ?",
+    "Quel est le modèle algorithmique que tu rêverais de mettre en place ?",
+    "T'as déjà dû expliquer un concept technique complexe à un novice complet ?",
+    "Quelle est la réunion la plus productive que tu aies eue cette semaine ?",
+    "C'est quoi ton rituel d'équipe préféré ?",
+    "T'as déjà fait du reverse engineering pour comprendre un vieux code hérité ?",
+    "Quelle est ta plus belle création de variable (feature engineering) ?",
+    "Quel est le sujet métier (sport) que tu connais sur le bout des doigts maintenant ?",
+    "T'as déjà découvert un bug majeur dans une extraction de données ?",
+    "Quelle est la meilleure initiative data prise par Decathlon ces dernières années selon toi ?",
+    "T'as déjà fait une analyse ad-hoc qui s'est transformée en projet pérenne ?",
+    "Quel collègue consultes-tu en premier quand tu es bloqué sur un problème technique ?"
+  ],
+  "3_pts": [
+    "C'est quoi l'analyse la plus compliquée que tu aies faite chez Decathlon ?",
+    "C'est quoi l'analyse dont t'es le plus fier chez Decathlon ?",
+    "Quel est ton plus gros 'fail' ou erreur d'analyse et qu'en as-tu appris ?",
+    "Si tu pouvais changer une chose dans l'architecture data de Decathlon, ce serait quoi ?",
+    "Quel est l'impact business chiffré le plus important que tu aies généré ?",
+    "Quelle est l'hypothèse métier que tu étais sûr(e) de vérifier et qui s'est avérée fausse ?",
+    "C'est quoi le moment où tu t'es senti le plus utile pour l'entreprise ?",
+    "Quelle est la vision que tu as pour le rôle de Data Analyst d'ici 3 ans chez Decat' ?",
+    "As-tu déjà dû tenir tête à un manager sur une conclusion data impopulaire ?",
+    "Quel est le projet qui t'a fait le plus grandir techniquement ?",
+    "C'est quoi le plus grand défi pour aligner la data avec la stratégie des sports prioritaires ?",
+    "Quelle est la pire dette technique que tu aies dû éponger ?",
+    "Raconte un moment où tu as dû construire un modèle en partant d'une feuille totalement blanche.",
+    "Quelle est ton ambition professionnelle à long terme dans la Data ?",
+    "Quel est le problème algorithmique le plus épineux que tu aies craqué ?",
+    "C'est quoi l'insight la plus contre-intuitive que tu aies découverte ?",
+    "Si tu devais pitcher l'importance de ton équipe au CEO demain, tu dirais quoi ?",
+    "Raconte un projet qui a nécessité une vraie synergie entre plusieurs départements.",
+    "Quelle est la faille de qualité/confidentialité des données qui te fait le plus peur ?",
+    "Quel est le modèle de données (schema) le plus élégant que tu aies conçu ?",
+    "C'est quoi le plus grand sacrifice que tu aies fait pour tenir une deadline critique ?",
+    "As-tu déjà dû déconstruire complètement une certitude business établie depuis des années ?",
+    "Quelle est la plus belle reconnaissance que tu pourrais obtenir dans ton travail actuel ?",
+    "Quel est le projet data le plus innovant que tu as vu chez Decathlon (même si ce n'est pas toi) ?",
+    "Si tu avais un budget illimité pour la tech data, tu achèterais quel outil ?",
+    "Quel est l'obstacle culturel le plus dur à franchir pour rendre l'entreprise 'Data Driven' ?",
+    "As-tu déjà vécu une situation de 'Data Quality' critique qui aurait pu impacter les magasins ?",
+    "Quel est l'algorithme ou la méthode statistique dont tu maîtrises toutes les subtilités ?",
+    "C'est quoi le conseil le plus précieux que tu donnerais à un Data Analyst Junior qui arrive ?",
+    "Quelle est la métrique ou l'indicateur dont l'entreprise se passe aujourd'hui mais qui serait révolutionnaire ?"
+  ]
+};
 
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
+const games = {};
 
-    function showScreenJoin() {
-      myName = document.getElementById('join-name').value;
-      if(!myName) return alert("Saisis ton prénom !");
-      localStorage.setItem('playerName', myName);
-      showScreen('screen-join');
-    }
+function generateCode() {
+  return Math.random().toString(36).substring(2, 6).toUpperCase();
+}
 
-    function createGame() {
-      myName = document.getElementById('join-name').value;
-      if (!myName) return alert("Saisis ton prénom !");
-      localStorage.setItem('playerName', myName);
-      socket.emit('createGame');
-    }
+function assignTargets(playerIds, playersData) {
+  let attempts = 0;
+  let valid = false;
+  let targets = [];
 
-    socket.on('gameCreated', (code) => {
-      myCode = code;
-      localStorage.setItem('gameCode', code);
-      socket.emit('joinGame', { code, name: myName });
-    });
-
-    function joinGame() {
-      myCode = document.getElementById('join-code').value.toUpperCase();
-      myName = localStorage.getItem('playerName');
-      if (myCode && myName) {
-          localStorage.setItem('gameCode', myCode);
-          socket.emit('joinGame', { code: myCode, name: myName });
+  while (!valid && attempts < 100) {
+    attempts++;
+    targets = [...playerIds].sort(() => Math.random() - 0.5);
+    valid = true;
+    for (let i = 0; i < playerIds.length; i++) {
+      let pId = playerIds[i];
+      let tId = targets[i];
+      if (pId === tId || (playersData[pId].pastTargets && playersData[pId].pastTargets.includes(tId))) {
+        valid = false;
+        break;
       }
     }
+  }
 
-    socket.on('joined', (data) => {
-      myCode = data.gameCode;
-      isHost = data.isHost;
-      if (isHost) {
-          document.getElementById('btn-start').style.display = 'block';
-          document.getElementById('btn-next-round').style.display = 'block';
+  if (!valid) {
+    targets = [...playerIds];
+    for (let i = targets.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [targets[i], targets[j]] = [targets[j], targets[i]];
+    }
+    for (let i = 0; i < playerIds.length; i++) {
+      if (playerIds[i] === targets[i]) {
+        let swapIdx = (i + 1) % playerIds.length;
+        [targets[i], targets[swapIdx]] = [targets[swapIdx], targets[i]];
       }
-      document.getElementById('display-code').innerText = myCode;
-      document.getElementById('btn-leave').style.display = 'block'; // Fait apparaitre la porte
-      if (data.status === 'lobby') showScreen('screen-lobby');
-    });
-
-    // Fonction pour quitter manuellement
-    function leaveGame() {
-        if(confirm("Veux-tu vraiment quitter cette partie ?")) {
-            socket.emit('leaveGame', { code: myCode });
-            localStorage.removeItem('gameCode');
-            window.location.reload();
-        }
     }
+  }
+  return targets;
+}
 
-    socket.on('updatePlayers', (players) => {
-      const list = document.getElementById('players-list');
-      list.innerHTML = '';
-      players.forEach(p => {
-        list.innerHTML += `<div class="list-item"><span>${p.name}</span> <span style="color: #2ecc71;">✓</span></div>`;
-      });
-    });
+io.on('connection', (socket) => {
+  socket.on('createGame', () => {
+    const code = generateCode();
+    games[code] = {
+      host: socket.id,
+      currentHostSocketId: socket.id,
+      players: {},
+      status: 'lobby',
+      round: 1,
+      gameQuestions: JSON.parse(JSON.stringify(questions))
+    };
+    socket.join(code);
+    socket.emit('gameCreated', code);
+  });
 
-    function startGame() { socket.emit('startGame', myCode); }
-    socket.on('startRound', ({ targetName }) => {
-      document.getElementById('target-name').innerText = targetName;
-      document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
-      showScreen('screen-category');
-    });
-    function selectCategory(category) { socket.emit('selectCategory', { code: myCode, category }); }
-    socket.on('questionAssigned', (question) => {
-      document.getElementById('question-text').innerText = question;
-      showScreen('screen-question');
-    });
-    function submitAnswer() {
-      const answer = document.getElementById('answer-input').value;
-      if(answer) socket.emit('submitAnswer', { code: myCode, answer });
+  socket.on('joinGame', ({ code, name }) => {
+    code = code.toUpperCase();
+    if (games[code]) {
+      let existingPlayerId = Object.keys(games[code].players).find(id => games[code].players[id].name === name);
+      
+      if (existingPlayerId) {
+          games[code].players[existingPlayerId].currentSocketId = socket.id;
+          if (games[code].host === existingPlayerId) {
+              games[code].currentHostSocketId = socket.id;
+          }
+      } else {
+          if (games[code].status !== 'lobby') return socket.emit('error', 'Partie déjà commencée.');
+          games[code].players[socket.id] = { 
+              id: socket.id, currentSocketId: socket.id, name, score: 0, status: 'waiting', pastTargets: []
+          };
+          if (games[code].host === socket.id) {
+              games[code].currentHostSocketId = socket.id;
+          }
+      }
+
+      const player = games[code].players[existingPlayerId || socket.id];
+      const isHost = (games[code].currentHostSocketId === socket.id);
+
+      socket.join(code);
+      io.to(code).emit('updatePlayers', Object.values(games[code].players));
+      socket.emit('joined', { gameCode: code, status: games[code].status, isHost });
+    } else {
+      socket.emit('error', 'Partie introuvable.');
     }
-    socket.on('waitingForOthers', () => showScreen('screen-waiting'));
-    
-    socket.on('allAnswersSubmitted', (answersData) => {
-      if (isHost) {
-        const container = document.getElementById('resolutions-container');
-        container.innerHTML = '';
-        answersData.forEach(data => {
-          const div = document.createElement('div');
-          div.className = 'resolution-card';
-          div.innerHTML = `
-            <h3>${data.name} ➔ ${data.targetName}</h3>
-            <p class="res-question">${data.question}</p>
-            <p class="res-answer">“ ${data.answer} ”</p>
-            <div style="display:flex; gap:5px; flex-wrap:wrap;">
-              <button class="btn-judge busted" onclick="scorePlayer('${data.id}', 'busted', this)">❌ BUSTED</button>
-              <button class="btn-judge false" onclick="scorePlayer('${data.id}', 'false', this)">❌ FALSE</button>
-              <button class="btn-judge true" onclick="scorePlayer('${data.id}', 'true', this)">❤️ TRUE</button>
-            </div>`;
-          container.appendChild(div);
+  });
+
+  socket.on('startGame', (code) => {
+    const game = games[code];
+    if (game && game.currentHostSocketId === socket.id) {
+      game.status = 'playing';
+      const playerIds = Object.keys(game.players);
+      const targets = assignTargets(playerIds, game.players);
+      
+      playerIds.forEach((id, index) => {
+        game.players[id].targetId = targets[index];
+        game.players[id].pastTargets.push(targets[index]);
+        game.players[id].status = 'playing';
+        
+        // Envoi de la cible de façon secrète à chaque joueur
+        io.to(game.players[id].currentSocketId).emit('startRound', { 
+            targetName: game.players[targets[index]].name 
         });
-        showScreen('screen-host-resolution');
-      }
-    });
-    
-    function scorePlayer(playerId, action, btn) {
-      socket.emit('scorePlayer', { code: myCode, playerId, action });
-      btn.parentElement.style.opacity = '0.3';
-      btn.parentElement.style.pointerEvents = 'none';
-    }
-    
-    function showScores() { socket.emit('showScores', myCode); }
-    
-    socket.on('displayScores', (scores) => {
-      const list = document.getElementById('scores-list');
-      list.innerHTML = '';
-      scores.forEach((s, idx) => {
-        list.innerHTML += `<div class="list-item"><span>#${idx + 1} ${s.name}</span><strong>${s.score} pts</strong></div>`;
       });
-      showScreen('screen-scores');
-    });
-    
-    function nextRound() { socket.emit('nextRound', myCode); }
-    
-    socket.on('backToLobby', () => {
-      document.getElementById('answer-input').value = '';
-      showScreen('screen-lobby');
-    });
-  </script>
-</body>
-</html>
+    }
+  });
+
+  socket.on('selectCategory', ({ code, category }) => {
+    const game = games[code];
+    if (game) {
+      const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
+      if (playerId) {
+        const qList = game.gameQuestions[category];
+        let randomQ = "Tu as épuisé toutes les questions de cette catégorie ! Pose une question de ton choix.";
+        let points = category === '1_pt' ? 1 : category === '2_pts' ? 2 : 3;
+        
+        if (qList.length > 0) {
+            const randomIndex = Math.floor(Math.random() * qList.length);
+            randomQ = qList[randomIndex];
+            qList.splice(randomIndex, 1);
+        }
+
+        socket.emit('questionAssigned', { question: randomQ, points: points });
+      }
+    }
+  });
+
+  // Nouveau : Le joueur soumet son résultat après son interaction IRL avec la cible
+  socket.on('submitRoundResult', ({ code, pointsEarned }) => {
+    const game = games[code];
+    if (game) {
+      const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
+      if (playerId) {
+        game.players[playerId].score += pointsEarned;
+        game.players[playerId].status = 'done';
+        socket.emit('waitingForOthers');
+        
+        // Vérifie si tout le monde a terminé
+        const allDone = Object.values(game.players).every(p => p.status === 'done');
+        if (allDone) {
+          game.status = 'scores';
+          const scores = Object.values(game.players)
+            .map(p => ({ name: p.name, score: p.score }))
+            .sort((a, b) => b.score - a.score);
+          io.to(code).emit('displayScores', scores);
+        }
+      }
+    }
+  });
+
+  socket.on('nextRound', (code) => {
+      const game = games[code];
+      if (game && game.currentHostSocketId === socket.id) {
+          game.round += 1;
+          game.status = 'lobby';
+          Object.keys(game.players).forEach(id => {
+              game.players[id].status = 'waiting';
+          });
+          io.to(code).emit('backToLobby');
+      }
+  });
+
+  socket.on('leaveGame', ({ code }) => {
+    const game = games[code];
+    if (game) {
+      const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
+      if (playerId) {
+        if (game.host === playerId) {
+            delete games[code];
+            io.to(code).emit('error', 'Le Leader a fermé la partie.');
+        } else {
+            delete game.players[playerId];
+            io.to(code).emit('updatePlayers', Object.values(game.players));
+        }
+      }
+    }
+    socket.leave(code);
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Serveur prêt sur port ${PORT}`);
+});
