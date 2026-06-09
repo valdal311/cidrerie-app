@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Local Insights Team Meeting Juin 2026</title>
   <style>
-    /* NOUVELLE PALETTE DE COULEURS */
     :root {
       --primary-blue: #3A45A3;
       --accent-green: #8CF596;
@@ -15,11 +14,13 @@
 
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-dark); margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh; }
     
-    /* HEADER MIS A JOUR */
     .header { background: var(--primary-blue); padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: relative; }
     .header-title { font-size: 1.1em; font-weight: bold; color: var(--accent-green); margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
-    .btn-leave { position: absolute; right: 15px; top: 12px; background: none; border: none; font-size: 24px; cursor: pointer; display: none; color: white; }
     
+    /* Boutons de Header modifiés */
+    .btn-leave { position: absolute; right: 15px; top: 12px; background: none; border: none; font-size: 24px; cursor: pointer; display: none; color: white; }
+    .btn-stop { position: absolute; left: 15px; top: 12px; background: #e74c3c; border: none; font-size: 12px; font-weight: bold; cursor: pointer; display: none; color: white; padding: 6px 10px; border-radius: 8px; }
+
     .app-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px; overflow-y: auto; }
     .screen { display: none; width: 100%; max-width: 400px; margin-top: 2vh; }
     .active { display: block; }
@@ -28,7 +29,6 @@
     .target-name { font-size: 1.8em; font-weight: bold; color: var(--text-dark); margin: 0; }
     input[type="text"] { padding: 18px; width: calc(100% - 36px); margin: 15px 0; border-radius: 12px; border: 1px solid #ddd; font-size: 16px; text-align: center; outline: none; }
     
-    /* BOUTONS MIS A JOUR */
     .btn-pill { padding: 16px 20px; margin: 10px 0; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; transition: 0.2s; }
     .btn-blue { background: var(--primary-blue); color: var(--accent-green); }
     .btn-gray { background: #fff; border: 2px solid #ddd; color: #555; }
@@ -42,7 +42,6 @@
     .cat-3 { border-color: #e74c3c; color: #e74c3c; }
     .list-item { background: #f8f9fa; padding: 15px; margin: 8px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: bold;}
     
-    /* CITATIONS ET TEXTES */
     .answer-quote { font-style: italic; color: var(--primary-blue); font-size: 1.2em; padding: 15px; background: rgba(58, 69, 163, 0.1); border-radius: 8px; margin: 15px 0; }
     .chances-text { font-weight: bold; color: #e74c3c; font-size: 1.2em; margin-bottom: 20px;}
     .instruction-text { font-size: 1.1em; color: #555; line-height: 1.4; margin-bottom: 15px;}
@@ -50,6 +49,7 @@
 </head>
 <body>
   <div class="header">
+    <button id="btn-stop" class="btn-stop" onclick="stopGame()">Arrêter la partie</button>
     <p class="header-title">Local Insights Team Meeting Juin 2026</p>
     <button id="btn-leave" class="btn-leave" onclick="leaveGame()">🚪</button>
   </div>
@@ -78,7 +78,7 @@
         <p style="text-transform: uppercase; color: #888;">Code de la partie</p>
         <h2 id="display-code" style="color:var(--primary-blue); font-size: 2.8em; margin: 5px 0;">----</h2>
         <div id="players-list"></div>
-        <button id="btn-start" class="btn-pill btn-blue" style="display:none;" onclick="startGame()">Lancer le Round</button>
+        <button id="btn-start" class="btn-pill btn-blue" style="display:none;" onclick="startGame()">Lancer le Jeu</button>
       </div>
     </div>
 
@@ -134,13 +134,19 @@
       </div>
     </div>
 
-    <div id="screen-waiting" class="screen"><div class="card"><h2>⏳ Suspens...</h2><p>Attends les autres joueurs.</p></div></div>
-    
     <div id="screen-scores" class="screen">
       <div class="card">
-        <h2>Classement</h2>
+        <h2>Classement Provisoire</h2>
         <div id="scores-list"></div>
-        <button id="btn-next-round" class="btn-pill btn-blue" style="display:none;" onclick="nextRound()">Round Suivant</button>
+        <button class="btn-pill btn-blue" style="margin-top:20px;" onclick="nextTarget()">Chercher une nouvelle cible</button>
+      </div>
+    </div>
+
+    <div id="screen-final" class="screen">
+      <div class="card">
+        <h2>🏆 Classement Final 🏆</h2>
+        <div id="final-scores-list"></div>
+        <button class="btn-pill btn-danger" style="margin-top:20px;" onclick="leaveGame()">Quitter la partie</button>
       </div>
     </div>
 
@@ -209,7 +215,6 @@
       isHost = data.isHost;
       if (isHost) {
           document.getElementById('btn-start').style.display = 'block';
-          document.getElementById('btn-next-round').style.display = 'block';
       }
       document.getElementById('display-code').innerText = myCode;
       document.getElementById('btn-leave').style.display = 'block';
@@ -228,13 +233,19 @@
       const list = document.getElementById('players-list');
       list.innerHTML = '';
       players.forEach(p => {
-        list.innerHTML += `<div class="list-item"><span>${p.name}</span> <span style="color: #2ecc71;">En attente</span></div>`;
+        list.innerHTML += `<div class="list-item"><span>${p.name}</span> <span style="color: #2ecc71;">Prêt</span></div>`;
       });
     });
 
     function startGame() { socket.emit('startGame', myCode); }
     
+    // Révèle le bouton d'arrêt uniquement pour l'hôte une fois le jeu lancé
+    socket.on('gameStarted', () => {
+        if(isHost) document.getElementById('btn-stop').style.display = 'block';
+    });
+
     socket.on('startRound', ({ targetName }) => {
+      document.getElementById('answer-input').value = '';
       currentTargetName = targetName;
       document.getElementById('target-name').innerText = targetName;
       document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
@@ -280,41 +291,61 @@
         }
     }
 
-    function guessSuccess() {
-        goToValidationPhase();
-    }
+    function guessSuccess() { goToValidationPhase(); }
 
     function goToValidationPhase() {
         const answer = document.getElementById('answer-input').value;
         document.getElementById('val-question').innerText = currentQuestion;
-        document.getElementById('val-answer').innerText = `"${answer}"`; // NOUVEAU: Ajout de la réponse
+        document.getElementById('val-answer').innerText = `"${answer}"`; 
         document.getElementById('val-points').innerText = currentPoints;
         showScreen('screen-validation');
     }
 
+    // Le joueur a terminé son action, envoi du score au serveur
     function submitFinalResult(isValid) {
         const pointsEarned = isValid ? currentPoints : 0;
         socket.emit('submitRoundResult', { code: myCode, pointsEarned });
     }
 
-    socket.on('waitingForOthers', () => showScreen('screen-waiting'));
+    // Le joueur passe à l'écran de classement provisoire
+    socket.on('showIntermediateScores', (scores) => {
+      renderScores(scores, 'scores-list');
+      showScreen('screen-scores');
+    });
+
+    // Le serveur notifie tout le monde en fond que le score a changé
+    socket.on('updateLiveScores', (scores) => {
+      renderScores(scores, 'scores-list');
+    });
+
+    function nextTarget() {
+        socket.emit('nextTarget', myCode);
+    }
     
-    socket.on('displayScores', (scores) => {
-      const list = document.getElementById('scores-list');
+    // Fonction d'arrêt global par l'hôte
+    function stopGame() {
+        if(confirm("Veux-tu vraiment arrêter la partie pour tout le monde ?")) {
+            socket.emit('stopGame', myCode);
+        }
+    }
+
+    // Événement d'arrêt déclenché par le serveur pour tous les joueurs
+    socket.on('gameEnded', (scores) => {
+        document.getElementById('btn-stop').style.display = 'none'; // Cache le bouton d'arrêt
+        renderScores(scores, 'final-scores-list');
+        showScreen('screen-final');
+    });
+
+    // Fonction utilitaire pour générer la liste des scores
+    function renderScores(scores, elementId) {
+      const list = document.getElementById(elementId);
+      if(!list) return;
       list.innerHTML = '';
       scores.forEach((s, idx) => {
         let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
         list.innerHTML += `<div class="list-item"><span>${medal} ${s.name}</span><strong style="color:var(--primary-blue);">${s.score} pts</strong></div>`;
       });
-      showScreen('screen-scores');
-    });
-    
-    function nextRound() { socket.emit('nextRound', myCode); }
-    
-    socket.on('backToLobby', () => {
-      document.getElementById('answer-input').value = '';
-      showScreen('screen-lobby');
-    });
+    }
   </script>
 </body>
 </html>
