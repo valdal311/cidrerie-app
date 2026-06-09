@@ -140,7 +140,8 @@ io.on('connection', (socket) => {
       currentHostSocketId: socket.id,
       players: {},
       status: 'lobby',
-      gameQuestions: JSON.parse(JSON.stringify(questions))
+      gameQuestions: JSON.parse(JSON.stringify(questions)),
+      history: [] // Ajout de l'historique
     };
     socket.join(code);
     socket.emit('gameCreated', code);
@@ -208,22 +209,28 @@ io.on('connection', (socket) => {
     }
   });
 
-  // MODIFICATION ICI : Prise en charge du paramètre awardToTarget
-  socket.on('submitRoundResult', ({ code, pointsEarned, awardToTarget }) => {
+  // Mise à jour de la soumission pour historiser les réponses validées
+  socket.on('submitRoundResult', ({ code, pointsEarned, awardToTarget, answerData }) => {
     const game = games[code];
     if (game) {
       const playerId = Object.keys(game.players).find(id => game.players[id].currentSocketId === socket.id);
       if (playerId) {
         
         if (awardToTarget) {
-            // Si la cible a deviné la question, la cible gagne 1 point
             const targetId = game.players[playerId].targetId;
-            if(game.players[targetId]) {
-                game.players[targetId].score += 1;
-            }
+            if(game.players[targetId]) game.players[targetId].score += 1;
         } else {
-            // Sinon (fin de processus classique), l'enquêteur gagne les points validés
             game.players[playerId].score += pointsEarned;
+            
+            // Historisation uniquement si la réponse est validée (> 0 points) et non-punitive
+            if (pointsEarned > 0 && answerData) {
+                game.history.push({
+                    asker: game.players[playerId].name,
+                    target: game.players[game.players[playerId].targetId].name,
+                    question: answerData.question,
+                    answer: answerData.answer
+                });
+            }
         }
         
         const scores = Object.values(game.players)
@@ -244,6 +251,24 @@ io.on('connection', (socket) => {
         game.players[playerId].targetId = getNextTarget(playerId, game.players);
         socket.emit('startRound', { targetName: game.players[game.players[playerId].targetId].name });
       }
+    }
+  });
+
+  // Nouvelles fonctions pour les boutons de l'hôte
+  socket.on('requestLeaderboard', (code) => {
+    const game = games[code];
+    if (game && game.currentHostSocketId === socket.id) {
+        const scores = Object.values(game.players)
+            .map(p => ({ name: p.name, score: p.score }))
+            .sort((a, b) => b.score - a.score);
+        socket.emit('showLeaderboardModal', scores);
+    }
+  });
+
+  socket.on('requestHistory', (code) => {
+    const game = games[code];
+    if (game && game.currentHostSocketId === socket.id) {
+        socket.emit('showHistoryModal', game.history);
     }
   });
 
