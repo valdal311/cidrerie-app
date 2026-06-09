@@ -97,7 +97,7 @@
 
     <div id="screen-question" class="screen">
       <div class="card">
-        <p class="instruction-text">Obtiens discrètement la réponse de ta cible à cette question :</p>
+        <p class="instruction-text">Obtiens discrètement la réponse de <strong id="question-target-name" style="color:var(--primary-blue);"></strong> à cette question :</p>
         <h3 id="question-text" style="color: var(--primary-blue);"></h3>
         <input type="text" id="answer-input" placeholder="Note sa réponse ici...">
         <button class="btn-pill btn-blue" onclick="startGuessPhase()">J'ai la réponse !</button>
@@ -244,6 +244,7 @@
       document.getElementById('answer-input').value = '';
       currentTargetName = targetName;
       document.getElementById('target-name').innerText = targetName;
+      document.getElementById('question-target-name').innerText = targetName; // Mémoire de la cible !
       document.getElementById('target-avatar').innerText = targetName[0].toUpperCase();
       showScreen('screen-category');
     });
@@ -265,8 +266,6 @@
       
       chancesLeft = 3;
       document.getElementById('guess-target-name').innerText = currentTargetName;
-      
-      // La réponse n'est PLUS affichée ici pour éviter la triche visuelle
       updateChancesUI();
       
       showScreen('screen-guess');
@@ -288,7 +287,11 @@
         }
     }
 
-    function guessSuccess() { goToValidationPhase(); }
+    // MODIFICATION ICI : La cible gagne le point, l'enquêteur gagne 0.
+    function guessSuccess() { 
+        alert("Pas assez discret ! " + currentTargetName + " a deviné la question et gagne 1 point. Tu gagnes 0 point.");
+        socket.emit('submitRoundResult', { code: myCode, pointsEarned: 0, awardToTarget: true });
+    }
 
     function goToValidationPhase() {
         const answer = document.getElementById('answer-input').value;
@@ -298,9 +301,10 @@
         showScreen('screen-validation');
     }
 
+    // MODIFICATION ICI : On précise que c'est un flux classique (awardToTarget: false)
     function submitFinalResult(isValid) {
         const pointsEarned = isValid ? currentPoints : 0;
-        socket.emit('submitRoundResult', { code: myCode, pointsEarned });
+        socket.emit('submitRoundResult', { code: myCode, pointsEarned: pointsEarned, awardToTarget: false });
     }
 
     socket.on('showIntermediateScores', (scores) => {
